@@ -19,16 +19,8 @@ import itertools
 import logging
 
 try:
-    pass
-    # from minesweeper import driver, game, settings, utils
-except Exception as e:
-    print('Game modules not found: "{}"'.format(e), file=sys.stderr)
-    sys.exit(ERROR_MODULES_MISSING)
-
-try:
     from PyQt5 import QtGui, QtCore, QtWidgets, QtOpenGL, uic
-    from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, \
-        QWidget
+    from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget
     from PyQt5.QtOpenGL import QGLWidget
 except Exception as e:
     print('PyQt5 not found: "{}".'.format(e),
@@ -42,6 +34,12 @@ except Exception as e:
     print('PyQt5 not found: "{}".'.format(e),
           file=sys.stderr)
     sys.exit(ERROR_OPENGL_VERSION)
+
+try:
+    from SceneBase import Scene
+except Exception as e:
+    print('App modules not found: "{}"'.format(e), file=sys.stderr)
+    sys.exit(ERROR_MODULES_MISSING)
 
 
 class GLWidget(QGLWidget):
@@ -66,7 +64,7 @@ class GLWidget(QGLWidget):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity()
         gluPerspective(45, self.width() / self.height(), 0.1, 50.0)
-        glTranslatef(0.0, 0.0, -10)
+        glTranslatef(0.0, 0.0, -10.0)
         glRotatef(self.angle, 1, 1, 1)
 
         glBegin(GL_LINES)
@@ -74,7 +72,6 @@ class GLWidget(QGLWidget):
             for vertex in edge:
                 glVertex3fv(self.vertices[vertex])
         glEnd()
-
 
         self.angle += 0.5
         self.update()
@@ -86,6 +83,8 @@ class GLWidget(QGLWidget):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.scene = Scene()
+
         uic.loadUi("untitled.ui", self)
 
         self.openGL_widget = GLWidget()
