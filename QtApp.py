@@ -13,14 +13,10 @@ if sys.version_info < (3, 4):
     print('Use python >= 3.4', file=sys.stderr)
     sys.exit(ERROR_PYTHON_VERSION)
 
-import argparse
-from contextlib import contextmanager
-import itertools
-import logging
-
 try:
     from PyQt5 import QtGui, QtCore, QtWidgets, QtOpenGL, uic
-    from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget
+    from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout,
+                                 QWidget)
     from PyQt5.QtOpenGL import QGLWidget
 except Exception as e:
     print('PyQt5 not found: "{}".'.format(e),
@@ -31,49 +27,59 @@ try:
     from OpenGL.GL import *
     from OpenGL.GLU import *
 except Exception as e:
-    print('PyQt5 not found: "{}".'.format(e),
+    print('OpenGL not found: "{}".'.format(e),
           file=sys.stderr)
     sys.exit(ERROR_OPENGL_VERSION)
 
 try:
-    from SceneBase import Scene
+    from SceneBase import *
 except Exception as e:
     print('App modules not found: "{}"'.format(e), file=sys.stderr)
     sys.exit(ERROR_MODULES_MISSING)
 
 
 class GLWidget(QGLWidget):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, scene=None):
         super(GLWidget, self).__init__(parent)
-        self.vertices = [
-            [1, 1, -1], [1, -1, -1], [-1, -1, -1], [-1, 1, -1],
-            [1, 1, 1], [1, -1, 1], [-1, -1, 1], [-1, 1, 1]
-        ]
-        self.edges = [
-            [0, 1], [1, 2], [2, 3], [3, 0],
-            [4, 5], [5, 6], [6, 7], [7, 4],
-            [0, 4], [1, 5], [2, 6], [3, 7]
-        ]
-        self.angle = 0
+        self.scene = scene
 
     def initializeGL(self):
         glEnable(GL_DEPTH_TEST)
         glClearColor(0.2, 0.2, 0.2, 1.0)
+        glEnable(GL_LIGHTING)
+        glEnable(GL_LIGHT0)
+        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [1.0, 1.0, 1.0, 1])
+
+        # Настройка источника света
+        # Направленный свет
+        glLightfv(GL_LIGHT0, GL_POSITION, [1.0, 1.0, 1.0, 0.0])
+        # Цвет рассеянного света
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, [1.0, 1.0, 1.0, 1.0])
+        # Цвет зеркального отражения
+        glLightfv(GL_LIGHT0, GL_SPECULAR, [1.0, 1.0, 1.0, 1.0])
+
+        # Настройка материала
+        glMaterialfv(GL_FRONT, GL_AMBIENT, [0.2, 0.2, 0.2, 1.0])
+        glMaterialfv(GL_FRONT, GL_DIFFUSE, [0.8, 0.8, 0.8, 1.0])
+        glMaterialfv(GL_FRONT, GL_SPECULAR, [1.0, 1.0, 1.0, 1.0])
+        glMaterialfv(GL_FRONT, GL_SHININESS, 50.0)
 
     def paintGL(self):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        gluPerspective(45, self.width() / self.height(), 0.1, 50.0)
-        glTranslatef(0.0, 0.0, -10.0)
-        glRotatef(self.angle, 1, 1, 1)
+        gluPerspective(90, self.width() / self.height(), 0.1, 100.0)
+        gluLookAt(-10, -10, 10,
+                  0, 0, 0,
+                  0, 0, 1)
 
-        glBegin(GL_LINES)
-        for edge in self.edges:
-            for vertex in edge:
-                glVertex3fv(self.vertices[vertex])
-        glEnd()
+        for name, entity in self.scene.entities.items():
+            entity.draw_shape()
 
-        self.angle += 0.5
+        self.scene.entities["1"].x += 0.01
+        self.scene.entities["1"].y += 0.01
+        self.scene.entities["1"].z += 0.01
+
         self.update()
 
     def resizeGL(self, w, h):
@@ -84,11 +90,19 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.scene = Scene()
+        self.openGL_widget = GLWidget(scene=self.scene)
 
         uic.loadUi("untitled.ui", self)
-
-        self.openGL_widget = GLWidget()
+        self.setWindowTitle("SimpleBlender")
         self.OpenGLContainer.layout().addWidget(self.openGL_widget)
+        self.upd()
+
+    def upd(self):
+        self.scene.add_point("1", 1, 10, 0)
+        self.scene.add_point("2", 1, -10, 0)
+        self.scene.add_point("3", -1, -10, 0)
+        self.scene.add_point("4", -1, 10, 0)
+        self.scene.add_figure2("fig", ["1", "2", "3", "4"])
 
 
 if __name__ == "__main__":
