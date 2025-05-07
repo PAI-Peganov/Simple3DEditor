@@ -86,8 +86,6 @@ class Figure2(BasicShape):
             glBegin(GL_POLYGON)
             normal_vec = np.cross(self.points[i].np_vector - first_point,
                                   self.points[i - 1].np_vector - first_point)
-            if np.linalg.norm(normal_vec) < 1e-7:
-                continue
             glNormal3fv(normal_vec)
             glVertex3fv(first_point)
             glVertex3fv(self.points[i - 1].np_vector)

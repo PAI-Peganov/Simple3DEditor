@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import sys
+
 ERROR_EXCEPTION = 1
 ERROR_WRONG_SETTINGS = 2
 ERROR_PYTHON_VERSION = 3
@@ -7,11 +9,11 @@ ERROR_MODULES_MISSING = 4
 ERROR_QT_VERSION = 5
 ERROR_OPENGL_VERSION = 6
 
-import sys
-
 if sys.version_info < (3, 4):
     print('Use python >= 3.4', file=sys.stderr)
     sys.exit(ERROR_PYTHON_VERSION)
+
+sys.excepthook = lambda x, y, z: print(y)
 
 try:
     from PyQt5 import QtGui, QtCore, QtWidgets, QtOpenGL, uic
@@ -62,7 +64,7 @@ class GLWidget(QGLWidget):
         glMaterialfv(GL_FRONT, GL_AMBIENT, [0.2, 0.2, 0.2, 1.0])
         glMaterialfv(GL_FRONT, GL_DIFFUSE, [0.8, 0.8, 0.8, 1.0])
         glMaterialfv(GL_FRONT, GL_SPECULAR, [1.0, 1.0, 1.0, 1.0])
-        glMaterialfv(GL_FRONT, GL_SHININESS, 50.0)
+        glMaterialfv(GL_FRONT, GL_SHININESS, 1.0)
 
     def paintGL(self):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -76,9 +78,8 @@ class GLWidget(QGLWidget):
         for name, entity in self.scene.entities.items():
             entity.draw_shape()
 
-        self.scene.entities["1"].x += 0.01
-        self.scene.entities["1"].y += 0.01
-        self.scene.entities["1"].z += 0.01
+        self.scene.entities["1"].x -= 0.01
+        self.scene.entities["1"].y -= 0.01
 
         self.update()
 
@@ -102,7 +103,8 @@ class MainWindow(QMainWindow):
         self.scene.add_point("2", 1, -10, 0)
         self.scene.add_point("3", -1, -10, 0)
         self.scene.add_point("4", -1, 10, 0)
-        self.scene.add_figure2("fig", ["1", "2", "3", "4"])
+        self.scene.add_point("5", 0, 10, 0)
+        self.scene.add_figure2("fig", ["1", "2", "3", "4", "5"])
 
 
 if __name__ == "__main__":
