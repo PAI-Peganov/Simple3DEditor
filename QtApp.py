@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import sys
+import sys, traceback
 
 ERROR_EXCEPTION = 1
 ERROR_WRONG_SETTINGS = 2
@@ -13,7 +13,9 @@ if sys.version_info < (3, 4):
     print('Use python >= 3.4', file=sys.stderr)
     sys.exit(ERROR_PYTHON_VERSION)
 
-sys.excepthook = lambda x, y, z: print(y)
+sys.excepthook = lambda x, y, z:(
+    print("".join(traceback.format_exception(x, y, z)))
+)
 
 try:
     from PyQt5 import QtGui, QtCore, QtWidgets, QtOpenGL, uic
@@ -40,6 +42,13 @@ except Exception as e:
     sys.exit(ERROR_MODULES_MISSING)
 
 
+PLANE_COLOR = [0.2, 0.8, 0.2, 1.0]
+FIGURE2_COLOR = [0.2, 0.2, 0.9, 1.0]
+SEGMENT_COLOR = [0.0, 0.8, 0.6, 1.0]
+EDGE_COLOR = [0.0, 0.0, 0.0, 1.0]
+POINT_COLOR = [1.0, 0.0, 0.0, 1.0]
+
+
 class GLWidget(QGLWidget):
     def __init__(self, parent=None, scene=None):
         super(GLWidget, self).__init__(parent)
@@ -51,7 +60,6 @@ class GLWidget(QGLWidget):
         glEnable(GL_LIGHTING)
         glEnable(GL_LIGHT0)
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [1.0, 1.0, 1.0, 1])
-
         # Настройка источника света
         # Направленный свет
         glLightfv(GL_LIGHT0, GL_POSITION, [1.0, 1.0, 1.0, 0.0])
@@ -59,12 +67,8 @@ class GLWidget(QGLWidget):
         glLightfv(GL_LIGHT0, GL_DIFFUSE, [1.0, 1.0, 1.0, 1.0])
         # Цвет зеркального отражения
         glLightfv(GL_LIGHT0, GL_SPECULAR, [1.0, 1.0, 1.0, 1.0])
-
-        # Настройка материала
-        glMaterialfv(GL_FRONT, GL_AMBIENT, [0.2, 0.2, 0.2, 1.0])
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, [0.8, 0.8, 0.8, 1.0])
-        glMaterialfv(GL_FRONT, GL_SPECULAR, [1.0, 1.0, 1.0, 1.0])
-        glMaterialfv(GL_FRONT, GL_SHININESS, 1.0)
+        # включение нормалей
+        glEnable(GL_NORMALIZE)
 
     def paintGL(self):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -78,8 +82,7 @@ class GLWidget(QGLWidget):
         for name, entity in self.scene.entities.items():
             entity.draw_shape()
 
-        self.scene.entities["1"].x -= 0.01
-        self.scene.entities["1"].y -= 0.01
+        self.scene.entities["2"].y += 0.01
 
         self.update()
 
@@ -99,12 +102,14 @@ class MainWindow(QMainWindow):
         self.upd()
 
     def upd(self):
-        self.scene.add_point("1", 1, 10, 0)
-        self.scene.add_point("2", 1, -10, 0)
-        self.scene.add_point("3", -1, -10, 0)
-        self.scene.add_point("4", -1, 10, 0)
-        self.scene.add_point("5", 0, 10, 0)
-        self.scene.add_figure2("fig", ["1", "2", "3", "4", "5"])
+        self.scene.add_point("1", 1, 1, 1)
+        self.scene.add_point("2", 1, 1, -1)
+        self.scene.add_point("3", 1, -1, 1)
+        self.scene.add_point("4", 1, -1, -1)
+        self.scene.add_point("5", -1, 1, 1)
+        self.scene.add_point("6", -1, 1, -1)
+        self.scene.add_point("7", -1, -1, 1)
+        self.scene.add_point("8", -1, -1, -1)
 
 
 if __name__ == "__main__":

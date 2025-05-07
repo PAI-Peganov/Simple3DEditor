@@ -1,5 +1,5 @@
 from QtApp import *
-import numpy as np
+from ShapeOpenGLDrawers import *
 
 
 class BasicShape:
@@ -39,10 +39,7 @@ class Point(BasicShape):
         self.z = z
 
     def draw_shape(self):
-        glBegin(GL_POINTS)
-        glColor3f(1.0, 0, 0)
-        glVertex3f(self.x, self.y, self.z)
-        glEnd()
+        draw_point(self)
 
     @property
     def np_vector(self):
@@ -56,11 +53,7 @@ class Segment(BasicShape):
         self.point_b = b
 
     def draw_shape(self):
-        glColor3f(0, 0, 0)
-        glBegin(GL_LINE)
-        glVertex3fv(self.point_a.np_vector)
-        glVertex3fv(self.point_b.np_vector)
-        glEnd()
+        draw_segment(self)
 
     def update_coordinates(self):
         self.point_a.x += self.x
@@ -80,17 +73,7 @@ class Figure2(BasicShape):
         self.points = list(points)
 
     def draw_shape(self):
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, [0.2, 0.2, 0.5, 1.0])
-        first_point = self.points[0].np_vector
-        for i in range(2, len(self.points)):
-            glBegin(GL_POLYGON)
-            normal_vec = np.cross(self.points[i].np_vector - first_point,
-                                  self.points[i - 1].np_vector - first_point)
-            glNormal3fv(normal_vec)
-            glVertex3fv(first_point)
-            glVertex3fv(self.points[i - 1].np_vector)
-            glVertex3fv(self.points[i].np_vector)
-            glEnd()
+        draw_figure2(self)
 
     def update_coordinates(self):
         for point in self.points:
@@ -133,26 +116,11 @@ class Plane(BasicShape):
                 self.point_a.z * self.normal[2]) / self.normal[2]
 
     def draw_shape(self):
-        if self.redraw > 0:
-            self.redraw -= 1
-            return
-        self.redraw = np.random.randint(10, 20)
-        self.update_plane()
-        glEnable(GL_TEXTURE_2D)
-        glColor3fv(0.7, 0.7, 0.7)
-        glBegin(GL_POLYGON)
-        if len(self.contur) > 0:
-            for segment in self.contur[0]:
-                glVertex3fv(segment.point_a.x,
-                            segment.point_a.y,
-                            segment.point_a.z)
-        else:
-            glVertex3fv(10000, 10000, self.count_new_z(10000, 10000))
-            glVertex3fv(10000, -10000, self.count_new_z(10000, -10000))
-            glVertex3fv(-10000, -10000, self.count_new_z(-10000, -10000))
-            glVertex3fv(-10000, 10000, self.count_new_z(-10000, 10000))
-        glEnd()
-        glDisable(GL_TEXTURE_2D)
+        self.redraw -= 1
+        if self.redraw < 0:
+            self.redraw = np.random.randint(10, 20)
+            self.update_plane()
+        draw_plane(self)
 
 
 class PlaneBy3Point(Plane):
