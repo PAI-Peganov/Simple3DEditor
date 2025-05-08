@@ -110,6 +110,10 @@ class Plane(BasicShape):
                 contur.segments[i].point_a.z = new_z
                 contur.segments[i - 1].point_b.z = new_z
 
+    def add_contur(self, contur: Contur2):
+        self.contur.append(contur)
+        self.update_contur()
+
     def count_new_z(self, x, y):
         return ((self.point_a.x - x) * self.normal[0] +
                 (self.point_a.y - y) * self.normal[1] +
@@ -138,9 +142,9 @@ class PlaneBy3Point(Plane):
         self.update_contur()
 
 
-class PlaneByPointSegment(PlaneBy3Point):
-    def __init__(self, point: Point, segment: Segment):
-        super().__init__(point, segment.point_a, segment.point_b)
+# class PlaneByPointSegment(PlaneBy3Point):
+#     def __init__(self, point: Point, segment: Segment):
+#         super().__init__(point, segment.point_a, segment.point_b)
         
         
 class PlaneByPlane(Plane):
@@ -152,3 +156,22 @@ class PlaneByPlane(Plane):
     def update_plane(self):
         self.normal = np.array(self.base_plane.normal)
         self.update_contur()
+
+
+class Figure3(BasicShape):
+    def __init__(self, faces: list[Figure2]):
+        super().__init__()
+        self.faces = list(faces)
+
+    def update_coordinates(self):
+        for face in self.faces:
+            face.x += self.x
+            face.y += self.y
+            face.z += self.z
+            face.update_coordinates()
+        self.x = 0
+        self.y = 0
+        self.z = 0
+
+    def draw_shape(self):
+        draw_figure3(self)

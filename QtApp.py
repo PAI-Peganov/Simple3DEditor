@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import sys, traceback
+from collections import deque
+import math
 
 ERROR_EXCEPTION = 1
 ERROR_WRONG_SETTINGS = 2
@@ -8,9 +10,10 @@ ERROR_PYTHON_VERSION = 3
 ERROR_MODULES_MISSING = 4
 ERROR_QT_VERSION = 5
 ERROR_OPENGL_VERSION = 6
+ERROR_NUMPY_VERSION = 6
 
-if sys.version_info < (3, 4):
-    print('Use python >= 3.4', file=sys.stderr)
+if sys.version_info < (3, 10):
+    print('Use python >= 3.10', file=sys.stderr)
     sys.exit(ERROR_PYTHON_VERSION)
 
 sys.excepthook = lambda x, y, z:(
@@ -34,6 +37,13 @@ except Exception as e:
     print('OpenGL not found: "{}".'.format(e),
           file=sys.stderr)
     sys.exit(ERROR_OPENGL_VERSION)
+
+try:
+    import numpy as np
+except Exception as e:
+    print('numpy not found: "{}".'.format(e),
+          file=sys.stderr)
+    sys.exit(ERROR_NUMPY_VERSION)
 
 try:
     from SceneBase import *
@@ -62,27 +72,33 @@ class GLWidget(QGLWidget):
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [1.0, 1.0, 1.0, 1])
         # Настройка источника света
         # Направленный свет
-        glLightfv(GL_LIGHT0, GL_POSITION, [1.0, 1.0, 1.0, 0.0])
+        glLightfv(GL_LIGHT0, GL_POSITION, [-5, 5, 4, 0.0])
         # Цвет рассеянного света
         glLightfv(GL_LIGHT0, GL_DIFFUSE, [1.0, 1.0, 1.0, 1.0])
         # Цвет зеркального отражения
         glLightfv(GL_LIGHT0, GL_SPECULAR, [1.0, 1.0, 1.0, 1.0])
         # включение нормалей
         glEnable(GL_NORMALIZE)
+        glLineWidth(2.0)
+        glEnable(GL_LINE_SMOOTH)
+        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST)
+        glPointSize(4.0)
+        glEnable(GL_POINT_SMOOTH)
+        glHint(GL_POINT_SMOOTH_HINT, GL_NICEST)
+        self.angle = 0
 
     def paintGL(self):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        gluPerspective(90, self.width() / self.height(), 0.1, 100.0)
-        gluLookAt(-10, -10, 10,
+        gluPerspective(70, self.width() / self.height(), 0.1, 100.0)
+        gluLookAt(math.sin(self.angle) * 5, math.cos(self.angle) * 5, 5,
                   0, 0, 0,
                   0, 0, 1)
+        self.angle += 0.01
 
         for name, entity in self.scene.entities.items():
             entity.draw_shape()
-
-        self.scene.entities["2"].y += 0.01
 
         self.update()
 
@@ -95,21 +111,17 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.scene = Scene()
         self.openGL_widget = GLWidget(scene=self.scene)
-
         uic.loadUi("untitled.ui", self)
         self.setWindowTitle("SimpleBlender")
         self.OpenGLContainer.layout().addWidget(self.openGL_widget)
-        self.upd()
+        self.init_menus()
 
-    def upd(self):
-        self.scene.add_point("1", 1, 1, 1)
-        self.scene.add_point("2", 1, 1, -1)
-        self.scene.add_point("3", 1, -1, 1)
-        self.scene.add_point("4", 1, -1, -1)
-        self.scene.add_point("5", -1, 1, 1)
-        self.scene.add_point("6", -1, 1, -1)
-        self.scene.add_point("7", -1, -1, 1)
-        self.scene.add_point("8", -1, -1, -1)
+    def init_menus(self):
+        self.scene.add_prism_n("five", 5)
+        # self.scene.add_plane_by_points("plane1",
+        #                                "pnt_upr_five_1",
+        #                                "pnt_upr_five_2",
+        #                                "pnt_lwr_five_4")
 
 
 if __name__ == "__main__":
@@ -117,4 +129,4 @@ if __name__ == "__main__":
     window = MainWindow()
     window.show()
     app.exec_()
-    #sys.exit(app.exec())
+    # sys.exit(app.exec())

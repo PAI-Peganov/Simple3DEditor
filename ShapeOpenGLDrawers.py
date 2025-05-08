@@ -4,7 +4,7 @@ from BasicShapes import *
 
 
 def set_material(color, shininess=1.0,
-                 ambient=0.2, diffuse=0.9, specular=0.0):
+                 ambient=0.2, diffuse=0.9, specular=0.001):
     color = np.array(color)
     ambient_val = color * ambient
     ambient_val[3] = color[3]
@@ -18,6 +18,20 @@ def set_material(color, shininess=1.0,
     glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse_val)
     glMaterialfv(GL_FRONT, GL_SPECULAR, specular_val)
     glMaterialfv(GL_FRONT, GL_SHININESS, shininess)
+
+
+def find_normal_figure2(self):
+    points = self.points
+    A = np.zeros(shape=(len(points), 3), dtype=float)
+    b = np.ones(shape=(len(points),), dtype=float)
+    alpha = 1000
+    delta = alpha * 1000
+    for i, point in enumerate(points):
+        A[i, :] = [point.x + np.random.randint(-alpha, alpha) / delta,
+                   point.y + np.random.randint(-alpha, alpha) / delta,
+                   point.z + np.random.randint(-alpha, alpha) / delta]
+    x = np.linalg.solve(A.T @ A, A.T @ b)
+    return [x[0], x[1], x[2]]
 
 
 def out_light(func):
@@ -57,6 +71,7 @@ def draw_contur2(points, color=SEGMENT_COLOR):
 def draw_figure2(self):
     set_material(FIGURE2_COLOR)
     first_point = self.points[0].np_vector
+    # normal_vec = find_normal_figure2(self)
     for i in range(2, len(self.points)):
         normal_vec = np.cross(self.points[i].np_vector - first_point,
                               self.points[i - 1].np_vector - first_point)
@@ -84,3 +99,8 @@ def draw_plane(self):
         glVertex3f(-10000, -10000, self.count_new_z(-10000, -10000))
         glVertex3f(-10000, 10000, self.count_new_z(-10000, 10000))
         glEnd()
+
+
+def draw_figure3(self):
+    for face in self.faces:
+        draw_figure2(face)
