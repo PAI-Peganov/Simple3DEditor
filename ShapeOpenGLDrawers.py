@@ -3,7 +3,7 @@ import numpy as np
 from BasicShapes import *
 
 
-def set_material(color, shininess=1.0,
+def set_material(color, shininess=100.0,
                  ambient=0.2, diffuse=0.9, specular=0.001):
     color = np.array(color)
     ambient_val = color * ambient
@@ -51,9 +51,9 @@ def draw_point(self):
 
 
 @out_light
-def draw_segment(self):
-    glBegin(GL_LINE)
-    glColor3fv(SEGMENT_COLOR[:3])
+def draw_segment(self, color=SEGMENT_COLOR):
+    glBegin(GL_LINES)
+    glColor3fv(color[:3])
     glVertex3fv(self.point_a.np_vector)
     glVertex3fv(self.point_b.np_vector)
     glEnd()
@@ -89,18 +89,24 @@ def draw_plane(self):
     glBegin(GL_POLYGON)
     glNormal3fv(self.normal)
     if len(self.contur) > 0:
-        for segment in self.contur[0]:
+        for segment in self.contur[0].segments:
             glVertex3fv(segment.point_a.np_vector)
         glEnd()
-        draw_contur2([el.point_a for el in self.contur[0]])
+        draw_contur2([el.point_a for el in self.contur[0].segments])
     else:
-        glVertex3f(10000, 10000, self.count_new_z(10000, 10000))
-        glVertex3f(10000, -10000, self.count_new_z(10000, -10000))
-        glVertex3f(-10000, -10000, self.count_new_z(-10000, -10000))
-        glVertex3f(-10000, 10000, self.count_new_z(-10000, 10000))
+        # не забыть: size меньше 2000,
+        size = 1000
+        glVertex3f(size, size, self.count_new_z(size, size))
+        glVertex3f(size, -size, self.count_new_z(size, -size))
+        glVertex3f(-size, -size, self.count_new_z(-size, -size))
+        glVertex3f(-size, size, self.count_new_z(-size, size))
         glEnd()
 
 
 def draw_figure3(self):
     for face in self.faces:
         draw_figure2(face)
+
+
+def draw_light(self):
+    glLightfv(self.lightGL, GL_POSITION, [self.x, self.y, self.z, 0.0])

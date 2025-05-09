@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
 import sys, traceback
-from collections import deque
+from collections import deque, defaultdict
 import math
+import pickle
+from pathlib import Path
 
 ERROR_EXCEPTION = 1
 ERROR_WRONG_SETTINGS = 2
@@ -23,7 +25,8 @@ sys.excepthook = lambda x, y, z:(
 try:
     from PyQt5 import QtGui, QtCore, QtWidgets, QtOpenGL, uic
     from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout,
-                                 QWidget)
+                                 QWidget, QDialog, QLabel, QLineEdit,
+                                 QPushButton, QMessageBox)
     from PyQt5.QtOpenGL import QGLWidget
 except Exception as e:
     print('PyQt5 not found: "{}".'.format(e),
@@ -47,6 +50,7 @@ except Exception as e:
 
 try:
     from SceneBase import *
+    from AddingWindows import *
 except Exception as e:
     print('App modules not found: "{}"'.format(e), file=sys.stderr)
     sys.exit(ERROR_MODULES_MISSING)
@@ -66,13 +70,13 @@ class GLWidget(QGLWidget):
 
     def initializeGL(self):
         glEnable(GL_DEPTH_TEST)
-        glClearColor(0.2, 0.2, 0.2, 1.0)
+        glClearColor(0.3, 0.3, 0.3, 1.0)
         glEnable(GL_LIGHTING)
         glEnable(GL_LIGHT0)
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [1.0, 1.0, 1.0, 1])
         # Настройка источника света
         # Направленный свет
-        glLightfv(GL_LIGHT0, GL_POSITION, [-5, 5, 4, 0.0])
+        glLightfv(GL_LIGHT0, GL_POSITION, [-100, 100, 100, 0.0])
         # Цвет рассеянного света
         glLightfv(GL_LIGHT0, GL_DIFFUSE, [1.0, 1.0, 1.0, 1.0])
         # Цвет зеркального отражения
@@ -86,6 +90,7 @@ class GLWidget(QGLWidget):
         glEnable(GL_POINT_SMOOTH)
         glHint(GL_POINT_SMOOTH_HINT, GL_NICEST)
         self.angle = 0
+        self.frame_counter = 0
 
     def paintGL(self):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -95,10 +100,18 @@ class GLWidget(QGLWidget):
         gluLookAt(math.sin(self.angle) * 5, math.cos(self.angle) * 5, 5,
                   0, 0, 0,
                   0, 0, 1)
-        self.angle += 0.01
+        self.angle = 4
+        self.frame_counter += 1
+        if self.frame_counter % 160 == 0:
+            if self.frame_counter // 160 % 2 == 1:
+                self.scene.load_entities_from_file(Path("test_figure1.pkl"))
+            else:
+                self.scene.load_entities_from_file(Path("test_figure.pkl"))
 
         for name, entity in self.scene.entities.items():
             entity.draw_shape()
+
+        self.scene.entities["pnt_upr_five_1"].z += 0.01
 
         self.update()
 
@@ -110,18 +123,30 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.scene = Scene()
+        self.init_scene()
         self.openGL_widget = GLWidget(scene=self.scene)
         uic.loadUi("untitled.ui", self)
         self.setWindowTitle("SimpleBlender")
         self.OpenGLContainer.layout().addWidget(self.openGL_widget)
-        self.init_menus()
 
-    def init_menus(self):
-        self.scene.add_prism_n("five", 5)
+        self.shape_adding_params = self.init_adding_params()
+
+
+    def init_scene(self):
+        self.scene.add_light("main_light", GL_LIGHT0, 100, 100, 100)
+        # self.scene.add_prism_n("five", 4, 1, 0.5)
         # self.scene.add_plane_by_points("plane1",
         #                                "pnt_upr_five_1",
         #                                "pnt_upr_five_2",
         #                                "pnt_lwr_five_4")
+        # self.scene.add_contur_n_to_plane("plane1", 7, 4)
+        # self.scene.save_entities_to_file(Path("test_figure1.pkl"))
+        self.scene.load_entities_from_file(Path("test_figure.pkl"))
+
+    def init_adding_params(self):
+        return {
+            "Point": ""
+        }
 
 
 if __name__ == "__main__":

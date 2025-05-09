@@ -3,7 +3,8 @@ from ShapeOpenGLDrawers import *
 
 
 class BasicShape:
-    def __init__(self):
+    def __init__(self, name: str):
+        self.name = name
         self.x = 0
         self.y = 0
         self.z = 0
@@ -30,10 +31,13 @@ class BasicShape:
     def draw_shape(self):
         pass
 
+    def add_children(self, list_children):
+        self.child_shapes = list(list_children)
+
 
 class Point(BasicShape):
-    def __init__(self, x: float, y: float, z: float):
-        super().__init__()
+    def __init__(self, name: str, x: float, y: float, z: float):
+        super().__init__(name)
         self.x = x
         self.y = y
         self.z = z
@@ -46,9 +50,18 @@ class Point(BasicShape):
         return np.array([self.x, self.y, self.z])
 
 
+class LightPoint(Point):
+    def __init__(self, name, lightGL, x, y, z):
+        super().__init__(name, x, y, z)
+        self.lightGL = lightGL
+
+    def draw_shape(self):
+        draw_light(self)
+
+
 class Segment(BasicShape):
-    def __init__(self, a: Point, b: Point):
-        super().__init__()
+    def __init__(self, name: str, a: Point, b: Point):
+        super().__init__(name)
         self.point_a = a
         self.point_b = b
 
@@ -68,8 +81,8 @@ class Segment(BasicShape):
 
 
 class Figure2(BasicShape):
-    def __init__(self, points: list[Point]):
-        super().__init__()
+    def __init__(self, name: str, points: list[Point]):
+        super().__init__(name)
         self.points = list(points)
 
     def draw_shape(self):
@@ -86,14 +99,14 @@ class Figure2(BasicShape):
 
 
 class Contur2(BasicShape):
-    def __init__(self, segments: list[Segment]):
-        super().__init__()
+    def __init__(self, name: str, segments: list[Segment]):
+        super().__init__(name)
         self.segments = list(segments)
 
 
 class Plane(BasicShape):
-    def __init__(self, point):
-        super().__init__()
+    def __init__(self, name: str, point):
+        super().__init__(name)
         self.normal = np.array([0.0, 0.0, 0.0], dtype=float)
         self.point_a = point
         self.redraw = 0
@@ -122,14 +135,14 @@ class Plane(BasicShape):
     def draw_shape(self):
         self.redraw -= 1
         if self.redraw < 0:
-            self.redraw = np.random.randint(10, 20)
+            self.redraw = np.random.randint(5, 15)
             self.update_plane()
         draw_plane(self)
 
 
 class PlaneBy3Point(Plane):
-    def __init__(self, point_a, point_b, point_c):
-        super().__init__(point_a)
+    def __init__(self, name: str, point_a, point_b, point_c):
+        super().__init__(name, point_a)
         self.point_b = point_b
         self.point_c = point_c
         self.update_plane()
@@ -142,14 +155,14 @@ class PlaneBy3Point(Plane):
         self.update_contur()
 
 
-# class PlaneByPointSegment(PlaneBy3Point):
-#     def __init__(self, point: Point, segment: Segment):
-#         super().__init__(point, segment.point_a, segment.point_b)
+class PlaneByPointSegment(PlaneBy3Point):
+    def __init__(self, name: str, point: Point, segment: Segment):
+        super().__init__(name, point, segment.point_a, segment.point_b)
         
         
 class PlaneByPlane(Plane):
-    def __init__(self, point, plane):
-        super().__init__(point)
+    def __init__(self, name: str, point, plane):
+        super().__init__(name, point)
         self.base_plane = plane
         self.update_plane()
 
@@ -159,8 +172,8 @@ class PlaneByPlane(Plane):
 
 
 class Figure3(BasicShape):
-    def __init__(self, faces: list[Figure2]):
-        super().__init__()
+    def __init__(self, name: str, faces: list[Figure2]):
+        super().__init__(name)
         self.faces = list(faces)
 
     def update_coordinates(self):
