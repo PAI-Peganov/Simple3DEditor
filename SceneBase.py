@@ -118,7 +118,7 @@ class Scene:
                                           segment_name])
         self.app_update()
 
-    def add_plane_by_plane(self, name: str, point_name:str,
+    def add_plane_by_plane(self, name: str, point_name: str,
                            plane_name: str):
         self.check_contains_errors(point_name, plane_name,
                                    new_entity=name)

@@ -158,8 +158,9 @@ class PlaneBy3Point(Plane):
 class PlaneByPointSegment(PlaneBy3Point):
     def __init__(self, name: str, point: Point, segment: Segment):
         super().__init__(name, point, segment.point_a, segment.point_b)
-        
-        
+        self.update_plane()
+
+
 class PlaneByPlane(Plane):
     def __init__(self, name: str, point, plane):
         super().__init__(name, point)

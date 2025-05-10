@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-import sys, traceback
+import sys
+import traceback
 from collections import deque, defaultdict
 import math
 import pickle
@@ -18,7 +19,7 @@ if sys.version_info < (3, 10):
     print('Use python >= 3.10', file=sys.stderr)
     sys.exit(ERROR_PYTHON_VERSION)
 
-sys.excepthook = lambda x, y, z:(
+sys.excepthook = lambda x, y, z: (
     print("".join(traceback.format_exception(x, y, z)))
 )
 
@@ -135,7 +136,6 @@ class GLWidget(QGLWidget):
         draw_segment(self.basis_x, color=[1.0, 0.0, 0.0])
         draw_segment(self.basis_y, color=[0.0, 1.0, 0.0])
         draw_segment(self.basis_z, color=[0.0, 0.0, 1.0])
-
 
 
 class MainWindow(QMainWindow):
