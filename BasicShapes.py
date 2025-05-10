@@ -5,28 +5,28 @@ from ShapeOpenGLDrawers import *
 class BasicShape:
     def __init__(self, name: str):
         self.name = name
-        self.x = 0
-        self.y = 0
-        self.z = 0
+        self.x = 0.0
+        self.y = 0.0
+        self.z = 0.0
         self.child_shapes = None
 
     def set(self, **kwargs):
-        for tag, value in kwargs:
+        for tag, value in kwargs.items():
             if isinstance(value, type(self.__getattribute__(tag))):
                 self.__setattr__(tag, value)
             else:
-                raise ValueError()
+                raise ValueError(type(self.__getattribute__(tag)))
         self.update_coordinates()
 
     def update_coordinates(self):
         pass
 
-    def send_init_params(self):
-        return {
-            "x": type(float),
-            "y": type(float),
-            "z": type(float)
-        }, self.set
+    def get_edit_params(self):
+        return [
+            ("x", "X", float),
+            ("y", "Y", float),
+            ("z", "Z", float)
+        ], self.set
 
     def draw_shape(self):
         pass
@@ -51,7 +51,7 @@ class Point(BasicShape):
 
 
 class LightPoint(Point):
-    def __init__(self, name, lightGL, x, y, z):
+    def __init__(self, name, lightGL, x: float, y: float, z: float):
         super().__init__(name, x, y, z)
         self.lightGL = lightGL
 
@@ -75,9 +75,9 @@ class Segment(BasicShape):
         self.point_b.x += self.x
         self.point_b.y += self.y
         self.point_b.z += self.z
-        self.x = 0
-        self.y = 0
-        self.z = 0
+        self.x = 0.0
+        self.y = 0.0
+        self.z = 0.0
 
 
 class Figure2(BasicShape):
@@ -93,9 +93,9 @@ class Figure2(BasicShape):
             point.x += self.x
             point.y += self.y
             point.z += self.z
-        self.x = 0
-        self.y = 0
-        self.z = 0
+        self.x = 0.0
+        self.y = 0.0
+        self.z = 0.0
 
 
 class Contur2(BasicShape):
@@ -182,9 +182,9 @@ class Figure3(BasicShape):
             face.y += self.y
             face.z += self.z
             face.update_coordinates()
-        self.x = 0
-        self.y = 0
-        self.z = 0
+        self.x = 0.0
+        self.y = 0.0
+        self.z = 0.0
 
     def draw_shape(self):
         draw_figure3(self)

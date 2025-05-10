@@ -183,7 +183,7 @@
               </sizepolicy>
              </property>
              <attribute name="title">
-              <string>Tab 1</string>
+              <string>Редактирование</string>
              </attribute>
              <layout class="QVBoxLayout" name="verticalLayout_5">
               <property name="spacing">
@@ -202,7 +202,7 @@
                <number>0</number>
               </property>
               <item>
-               <widget class="QTreeWidget" name="treeWidget">
+               <widget class="QTreeWidget" name="entity_tree">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
                   <horstretch>0</horstretch>
@@ -233,17 +233,20 @@
                    </size>
                   </property>
                   <property name="text">
-                   <string> Name</string>
+                   <string>Имя</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLineEdit" name="lineEdit_edit_name">
+                 <widget class="QLabel" name="label_name_view">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
+                  </property>
+                  <property name="text">
+                   <string>TextLabel</string>
                   </property>
                  </widget>
                 </item>
@@ -369,7 +372,7 @@
               <item>
                <widget class="QPushButton" name="button_edit_apply">
                 <property name="text">
-                 <string>Apply</string>
+                 <string>Применить изменения</string>
                 </property>
                </widget>
               </item>
@@ -383,7 +386,7 @@
               </sizepolicy>
              </property>
              <attribute name="title">
-              <string>Tab 2</string>
+              <string>Добавление</string>
              </attribute>
              <layout class="QVBoxLayout" name="verticalLayout_6">
               <property name="spacing">
@@ -401,54 +404,6 @@
               <property name="bottomMargin">
                <number>0</number>
               </property>
-              <item>
-               <widget class="QPushButton" name="button_add_point">
-                <property name="text">
-                 <string>Точка</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="button_add_segment">
-                <property name="text">
-                 <string>Отрезок</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="button_add_plane">
-                <property name="text">
-                 <string>Плоскость</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="button_add_contur2">
-                <property name="text">
-                 <string>Контур 2D</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="button_add_figure2">
-                <property name="text">
-                 <string>Фигура 2D</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="button_add_figure3">
-                <property name="text">
-                 <string>Фигура 3D</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QListWidget" name="listWidget"/>
-              </item>
-              <item>
-               <widget class="QWidget" name="widget_3" native="true"/>
-              </item>
              </layout>
             </widget>
            </widget>
