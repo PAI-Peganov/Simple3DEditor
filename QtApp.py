@@ -192,6 +192,9 @@ class MainWindow(QMainWindow):
                     "z": float(self.double_edit_z.value())
                 }
                 options[1](**values)
+                self.double_edit_x.setValue(entity.x)
+                self.double_edit_y.setValue(entity.y)
+                self.double_edit_z.setValue(entity.z)
 
             self.button_edit_apply.clicked.connect(apply_clicked)
 
