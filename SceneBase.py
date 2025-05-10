@@ -1,6 +1,14 @@
-import pickle
-
 from BasicShapes import *
+
+
+class EntityNotFoundException(Exception):
+    def __init__(self, text=None):
+        super().__init__(text)
+
+
+class EntityNameAlreadyExistsException(Exception):
+    def __init__(self, text=None):
+        super().__init__(text)
 
 
 class Scene:
@@ -22,25 +30,37 @@ class Scene:
         with open(filepath, 'wb') as f:
             pickle.dump(self.entities, f)
 
+    def check_contains_errors(self, *args, new_entity=None):
+        if any(self.entities.get(el) is None for el in args):
+            raise EntityNotFoundException()
+        if self.entities.get(new_entity) is not None:
+            raise EntityNameAlreadyExistsException()
+
     def add_point(self, name: str, x: float, y: float, z: float):
+        self.check_contains_errors(new_entity=name)
         self.entities[name] = Point(name, x, y, z)
 
     def add_light(self, name: str, lightGL, x: float, y: float, z: float):
         self.entities[name] = LightPoint(name, lightGL, x, y, z)
 
     def add_segment(self, name: str, point_a_name: str, point_b_name: str):
+        self.check_contains_errors(point_a_name, point_b_name,
+                                   new_entity=name)
         self.entities[name] = Segment(name,
                                       self.entities[point_a_name],
                                       self.entities[point_b_name])
         self.entities[name].add_children([point_a_name, point_b_name])
 
-    def add_figure2(self, name: str, point_names: list[str]):
+    def add_figure2(self, name: str, points_names: list[str]):
+        self.check_contains_errors(*points_names,
+                                   new_entity=name)
         self.entities[name] = Figure2(name,
                                       [self.entities[el]
-                                       for el in point_names])
-        self.entities[name].add_children(point_names)
+                                       for el in points_names])
+        self.entities[name].add_children(points_names)
 
     def add_figure2_n(self, name: str, n: int, radius: float):
+        self.check_contains_errors(new_entity=name)
         points = [f"figure2_point_{name}_{i}" for i in range(1, n + 1)]
         arc = 2 * math.pi / n
         for i, point_name in enumerate(points):
@@ -52,6 +72,8 @@ class Scene:
 
     def add_plane_by_points(self, name: str, point1_name: str,
                             point2_name: str, point3_name: str):
+        self.check_contains_errors(point1_name, point2_name, point3_name,
+                                   new_entity=name)
         point1 = self.entities[point1_name]
         point2 = self.entities[point2_name]
         point3 = self.entities[point3_name]
@@ -64,6 +86,8 @@ class Scene:
 
     def add_plane_by_point_and_segment(self, name: str, point_name: str,
                                        segment_name: str):
+        self.check_contains_errors(point_name, segment_name,
+                                   new_entity=name)
         point = self.entities[point_name]
         segment = self.entities[segment_name]
         if is_point_collinear(point, segment.point_a, segment.point_b):
@@ -76,6 +100,8 @@ class Scene:
 
     def add_plane_by_plane(self, name: str, point_name:str,
                            plane_name: str):
+        self.check_contains_errors(point_name, plane_name,
+                                   new_entity=name)
         point = self.entities[point_name]
         plane = self.entities[plane_name]
         self.entities[name] = PlaneByPlane(name, point, plane)
@@ -83,6 +109,7 @@ class Scene:
 
     def add_contur_to_plane(self, plane_name: str,
                             segments_names: list[str]):
+        self.check_contains_errors(plane_name, *segments_names)
         plane = self.entities[plane_name]
         contur_name = f"contur_{plane_name}_{len(plane.contur)}"
         plane.add_contur(Contur2(contur_name,
@@ -107,12 +134,15 @@ class Scene:
 
 
     def add_figure3(self, name: str, faces_names: list[str]):
+        self.check_contains_errors(*faces_names,
+                                   new_entity=name)
         self.entities[name] = Figure3(name,
                                       [self.entities[face_name]
                                        for face_name in faces_names])
         self.entities[name].add_children(faces_names)
 
     def add_prism_n(self, name: str, n: int, radius: float, height: float):
+        self.check_contains_errors(new_entity=name)
         upper_points = [f"pnt_upr_{name}_{i}" for i in range(1, n + 1)]
         lower_points = [f"pnt_lwr_{name}_{i}" for i in range(1, n + 1)]
         arc = 2 * math.pi / n

@@ -26,7 +26,8 @@ try:
     from PyQt5 import QtGui, QtCore, QtWidgets, QtOpenGL, uic
     from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout,
                                  QWidget, QDialog, QLabel, QLineEdit,
-                                 QPushButton, QMessageBox)
+                                 QPushButton, QMessageBox, QFormLayout,
+                                 QDoubleSpinBox, QHBoxLayout)
     from PyQt5.QtOpenGL import QGLWidget
 except Exception as e:
     print('PyQt5 not found: "{}".'.format(e),
@@ -56,9 +57,9 @@ except Exception as e:
     sys.exit(ERROR_MODULES_MISSING)
 
 
-PLANE_COLOR = [0.2, 0.8, 0.2, 1.0]
+PLANE_COLOR = [0.2, 0.7, 0.3, 1.0]
 FIGURE2_COLOR = [0.2, 0.2, 0.9, 1.0]
-SEGMENT_COLOR = [0.0, 0.8, 0.6, 1.0]
+SEGMENT_COLOR = [0.0, 0.9, 0.6, 1.0]
 EDGE_COLOR = [0.0, 0.0, 0.0, 1.0]
 POINT_COLOR = [1.0, 0.0, 0.0, 1.0]
 
@@ -145,7 +146,71 @@ class MainWindow(QMainWindow):
 
     def init_adding_params(self):
         return {
-            "Point": ""
+            "Точка": ([
+                ("name", "Имя точки", str),
+                ("x", "X", float),
+                ("y", "Y", float),
+                ("z", "Z", float),
+            ], self.scene.add_point),
+            "Отрезок": ([
+                ("name", "Имя отрезка", str),
+                ("point_a_name", "Точка A", str),
+                ("point_b_name", "Точка B", str)
+            ], self.scene.add_segment),
+            "Плоскость": {
+                "По трем точкам": ([
+                    ("name", "Имя плоскости", str),
+                    ("point1_name", "", str),
+                    ("point2_name", "", str),
+                    ("point3_name", "", str)
+                ], self.scene.add_plane_by_points),
+                "По точке и отрезку": ([
+                    ("name", "Имя плоскости", str),
+                    ("point_name", "Точка", str),
+                    ("segment_name", "Отрезок", str)
+                ], self.scene.add_plane_by_point_and_segment),
+                "Параллельно плоскости": ([
+                    ("name", "Имя плоскости", str),
+                    ("point_name", "Точка в плоскости", str),
+                    ("plane_name", "Параллельна плоскость", str)
+                ], self.scene.add_plane_by_plane)
+            },
+            "Контур 2D": {
+                "По отрезкам зацикленной ломаной": ([
+                    ("plane_name", "Плоскость", str),
+                    ("segments_names", "Отрезки (по порядку в ломаной)",
+                    list[str])
+                ], self.scene.add_contur_to_plane),
+                "Сгенерировать N Отрезков": ([
+                    ("plane_name", "Плоскость", str),
+                    ("n", "Кол-во точек", int),
+                    ("radius", "Радиус", float)
+                ], self.scene.add_contur_n_to_plane)
+            },
+            "Фигура 2D": {
+                "По точкам": ([
+                    ("name", "Имя фигуры", str),
+                    ("points_names", "Точки (порядок по ходу окружности)",
+                     list[str])
+                ], self.scene.add_figure2),
+                "Сгенерировать N Точек": ([
+                    ("name", "Имя фигуры", str),
+                    ("n", "Кол-во точек", int),
+                    ("radius", "Радиус", float)
+                ], self.scene.add_figure2_n)
+            },
+            "Фигура 3D": {
+                "Объединить грани": ([
+                    ("name", "Имя фигуры", str),
+                    ("faces_names", "Грани", list[str])
+                ], self.scene.add_figure3),
+                "Призма": ([
+                    ("name", "Имя фигуры", str),
+                    ("n", "Кол-во боковых граней", int),
+                    ("radius", "Радиус", float),
+                    ("height", "Высота", float)
+                ], self.scene.add_prism_n)
+            }
         }
 
 
