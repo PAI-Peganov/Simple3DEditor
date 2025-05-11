@@ -1,5 +1,4 @@
-from QtApp import *
-from ShapeOpenGLDrawers import *
+from src.Simple2DEditorImports import *
 
 
 class BasicShape:

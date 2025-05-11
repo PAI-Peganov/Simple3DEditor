@@ -1,6 +1,4 @@
-import numpy as np
-
-from BasicShapes import *
+from src.Simple2DEditorImports import *
 
 
 def set_material(color, shininess=100.0,

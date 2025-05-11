@@ -1,4 +1,4 @@
-from BasicShapes import *
+from src.Simple2DEditorImports import *
 
 
 class EntityNotFoundException(Exception):
@@ -112,8 +112,8 @@ class Scene:
         if is_point_collinear(point, segment.point_a, segment.point_b):
             raise ValueError()
         self.entities[name] = PlaneByPointSegment(name,
-                                                  segment.point_a,
-                                                  segment.point_b)
+                                                  point,
+                                                  segment)
         self.entities[name].add_children([point_name,
                                           segment_name])
         self.app_update()

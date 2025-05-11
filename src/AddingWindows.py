@@ -1,4 +1,4 @@
-from QtApp import *
+from src.QtApp import *
 
 
 class ListStringsInput(QWidget):
