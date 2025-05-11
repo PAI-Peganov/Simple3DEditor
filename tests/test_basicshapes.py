@@ -33,7 +33,9 @@ class TestBasicShape(unittest.TestCase):
     def test_get_edit_params(self):
         shape = BasicShape("test")
         params, set_func = shape.get_edit_params()
-        self.assertEqual(params, [("x", "X", float), ("y", "Y", float), ("z", "Z", float)])
+        self.assertEqual(params, [("x", "X", float),
+                                  ("y", "Y", float),
+                                  ("z", "Z", float)])
         self.assertEqual(set_func, shape.set)
 
 
@@ -47,7 +49,8 @@ class TestPoint(unittest.TestCase):
 
     def test_np_vector_property(self):
         point = Point("test_point", 1.0, 2.0, 3.0)
-        self.assertTrue(np.array_equal(point.np_vector, np.array([1.0, 2.0, 3.0])))
+        self.assertTrue(np.array_equal(point.np_vector,
+                                       np.array([1.0, 2.0, 3.0])))
 
 
 class TestLightPoint(unittest.TestCase):
@@ -124,7 +127,8 @@ class TestPlane(unittest.TestCase):
         plane = Plane("test_plane", point)
         self.assertEqual(plane.name, "test_plane")
         self.assertIs(plane.point_a, point)
-        self.assertTrue(np.array_equal(plane.normal, np.array([0.0, 0.0, 0.0])))
+        self.assertTrue(np.array_equal(plane.normal,
+                                       np.array([0.0, 0.0, 0.0])))
         self.assertEqual(plane.redraw, 0)
         self.assertEqual(plane.contur, [])
 
@@ -134,7 +138,7 @@ class TestPlane(unittest.TestCase):
         plane.normal = np.array([1.0, 1.0, 1.0])
 
         z = plane.count_new_z(2.0, 2.0)
-        expected_z = ((1.0 - 2.0) * 1.0 + (1.0 - 2.0) * 1.0 + 1.0 * 1.0) / 1.0
+        expected_z = ((1.0 - 2.0) * 1.0 + (1.0 - 2.0) * 1.0 + 1.0 * 1.0)
         self.assertEqual(z, expected_z)
 
     def test_add_contur(self):
@@ -142,7 +146,8 @@ class TestPlane(unittest.TestCase):
         plane = Plane("test_plane", point)
         plane.normal = np.array([0.0, 0.0, 1.0])
 
-        segment = Segment("AB", Point("A", 1.0, 1.0, 0.0), Point("B", 2.0, 2.0, 0.0))
+        segment = Segment("AB", Point("A", 1.0, 1.0, 0.0),
+                          Point("B", 2.0, 2.0, 0.0))
         contur = Contur2("contur", [segment])
         plane.add_contur(contur)
 
@@ -182,7 +187,8 @@ class TestPlaneBy3Point(unittest.TestCase):
 class TestPlaneByPointSegment(unittest.TestCase):
     def test_init(self):
         point = Point("P", 1.0, 1.0, 1.0)
-        segment = Segment("AB", Point("A", 0.0, 0.0, 0.0), Point("B", 0.0, 0.0, 1.0))
+        segment = Segment("AB", Point("A", 0.0, 0.0, 0.0),
+                          Point("B", 0.0, 0.0, 1.0))
         plane = PlaneByPointSegment("test_plane", point, segment)
 
         expected_normal = np.cross(
