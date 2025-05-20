@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-import os.path
 
 from src.Simple2DEditorImports import *
+from tkinter import filedialog
 
 
 class GLWidget(QGLWidget):
@@ -193,8 +193,6 @@ class MainWindow(QMainWindow):
         layout.addLayout(QVBoxLayout())
         layout.addWidget(self.spinbox_zooming)
         self.widget.layout().addLayout(layout)
-
-
 
     def set_camera_rotation(self, angle):
         self.openGL_widget.camera_rotation_angle = math.pi * angle / 180
