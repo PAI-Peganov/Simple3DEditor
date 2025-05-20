@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os.path
 
 from src.Simple2DEditorImports import *
 
@@ -9,7 +10,7 @@ class GLWidget(QGLWidget):
         self.scene = scene
         self.camera_rotation_angle = 0
         self.camera_lifting_angle = 0
-        self.camera_distance = 1
+        self.camera_distance = 5
         self.frame_counter = 0
         self.basis_p_0 = Point("", 0, 0, 0)
         self.basis_p_x = Point("", 1, 0, 0)
@@ -92,8 +93,9 @@ class MainWindow(QMainWindow):
         self.entity_tree.setColumnCount(2)
         self.entity_tree.setHeaderLabels(["Имя", "Тип"])
         self.init_tree_interaction()
-        self.init_saving_field()
+        self.spinbox_zooming = QDoubleSpinBox()
         self.init_scroll()
+        self.init_saving_field()
         self.init_scene()
 
     def scene_update(self):
@@ -142,12 +144,30 @@ class MainWindow(QMainWindow):
         path_line = QLineEdit()
 
         def save_click():
-            self.scene.save_entities_to_file(Path(path_line.text().strip()))
+            save_path = path_line.text().strip()
+            if not save_path:
+                save_path = filedialog.asksaveasfilename(
+                    defaultextension=".pkl",
+                    filetypes=[("Pickle files", "*.pkl")]
+                )
+            if save_path:
+                self.scene.save_entities_to_file(Path(save_path))
+                path_line.setText(str(Path(save_path)))
         save_button = QPushButton(text="Save")
         save_button.clicked.connect(save_click)
 
         def load_click():
-            self.scene.load_entities_from_file(Path(path_line.text().strip()))
+            load_path = path_line.text().strip()
+            if not load_path:
+                load_path = filedialog.askopenfilename(
+                    filetypes=[("Pickle files", "*.pkl")]
+                )
+            if load_path:
+                if not os.path.exists(load_path):
+                    QMessageBox.warning(self, "Ошибка", "Файл не найден")
+                self.scene.load_entities_from_file(Path(load_path))
+                path_line.setText(str(Path(load_path)))
+
         load_button = QPushButton(text="Load")
         load_button.clicked.connect(load_click)
         layout.addWidget(load_button)
@@ -162,9 +182,19 @@ class MainWindow(QMainWindow):
         self.scroll_lifting.setRange(-90, 90)
         self.scroll_lifting.setValue(0)
         self.scroll_lifting.valueChanged.connect(self.set_camera_lifting)
-        self.scroll_zooming.setRange(1, 30)
-        self.scroll_zooming.setValue(5)
+        self.scroll_zooming.setRange(1, 20)
+        self.scroll_zooming.setValue(self.openGL_widget.camera_distance)
         self.scroll_zooming.valueChanged.connect(self.set_camera_distance)
+        self.spinbox_zooming.setRange(1, 300)
+        self.spinbox_zooming.setValue(self.openGL_widget.camera_distance)
+        self.spinbox_zooming.setSingleStep(0.05)
+        self.spinbox_zooming.valueChanged.connect(self.set_camera_distance)
+        layout = QHBoxLayout()
+        layout.addLayout(QVBoxLayout())
+        layout.addWidget(self.spinbox_zooming)
+        self.widget.layout().addLayout(layout)
+
+
 
     def set_camera_rotation(self, angle):
         self.openGL_widget.camera_rotation_angle = math.pi * angle / 180
@@ -173,7 +203,14 @@ class MainWindow(QMainWindow):
         self.openGL_widget.camera_lifting_angle = -math.pi * angle / 180
 
     def set_camera_distance(self, distance):
+        if distance >= self.scroll_zooming.maximum():
+            self.scroll_zooming.setRange(1, distance + 1)
+            self.spinbox_zooming.setRange(
+                1, max(distance + 1, self.spinbox_zooming.maximum())
+            )
         self.openGL_widget.camera_distance = distance
+        self.scroll_zooming.setValue(int(distance))
+        self.spinbox_zooming.setValue(float(distance))
 
     def init_scene(self):
         # self.scene.add_prism_n("five", 4, 1, 0.5)
@@ -182,8 +219,8 @@ class MainWindow(QMainWindow):
         #                                "pnt_upr_five_2",
         #                                "pnt_lwr_five_4")
         # self.scene.add_contur_n_to_plane("plane1", 7, 4)
-        # self.scene.save_entities_to_file(Path("test_figure1.pkl"))
-        # self.scene.load_entities_from_file(Path("test_figure.pkl"))
+        # self.scene.save_entities_to_file(Path("figure1.pkl"))
+        # self.scene.load_entities_from_file(Path("figure.pkl"))
         self.scene.add_light("main_light", GL_LIGHT0, 100.0, 100.0, 100.0)
         self.scene_update()
 
@@ -252,7 +289,19 @@ class MainWindow(QMainWindow):
                     ("n", "Кол-во боковых граней", int),
                     ("radius", "Радиус", float),
                     ("height", "Высота", float)
-                ], self.scene.add_prism_n)
+                ], self.scene.add_prism_n),
+                "Пирамида": ([
+                    ("name", "Имя фигуры", str),
+                    ("n", "Кол-во боковых граней", int),
+                    ("radius", "Радиус", float),
+                    ("height", "Высота", float)
+                ], self.scene.add_pyramid_n),
+                "Сфера": ([
+                    ("name", "Имя фигуры", str),
+                    ("n", "Кол-во граней по горизонтали", int),
+                    ("m", "Кол-во граней по вертикали", int),
+                    ("radius", "Радиус", float)
+                ], self.scene.add_sphere_nm)
             }
         }
 

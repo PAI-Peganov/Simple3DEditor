@@ -11,10 +11,9 @@ class BasicShape:
 
     def set(self, **kwargs):
         for tag, value in kwargs.items():
-            if isinstance(value, type(self.__getattribute__(tag))):
-                self.__setattr__(tag, value)
-            else:
-                raise ValueError(type(self.__getattribute__(tag)))
+            if not isinstance(value, type(self.__getattribute__(tag))):
+                print(type(value) + "некорректен")
+            self.__setattr__(tag, type(self.__getattribute__(tag))(value))
         self.update_coordinates()
 
     def update_coordinates(self):
@@ -50,7 +49,7 @@ class Point(BasicShape):
 
 
 class LightPoint(Point):
-    def __init__(self, name, lightGL, x: float, y: float, z: float):
+    def __init__(self, name: str, lightGL, x: float, y: float, z: float):
         super().__init__(name, x, y, z)
         self.lightGL = lightGL
 
@@ -104,7 +103,7 @@ class Contur2(BasicShape):
 
 
 class Plane(BasicShape):
-    def __init__(self, name: str, point):
+    def __init__(self, name: str, point: Point):
         super().__init__(name)
         self.normal = np.array([0.0, 0.0, 0.0], dtype=float)
         self.point_a = point
@@ -140,7 +139,9 @@ class Plane(BasicShape):
 
 
 class PlaneBy3Point(Plane):
-    def __init__(self, name: str, point_a, point_b, point_c):
+    def __init__(
+            self, name: str, point_a: Point, point_b: Point, point_c: Point
+    ):
         super().__init__(name, point_a)
         self.point_b = point_b
         self.point_c = point_c
@@ -161,7 +162,7 @@ class PlaneByPointSegment(PlaneBy3Point):
 
 
 class PlaneByPlane(Plane):
-    def __init__(self, name: str, point, plane):
+    def __init__(self, name: str, point: Point, plane: Plane):
         super().__init__(name, point)
         self.base_plane = plane
         self.update_plane()
