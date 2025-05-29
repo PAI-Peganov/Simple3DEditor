@@ -128,7 +128,8 @@ class MainWindow(QMainWindow):
                 values = {
                     "x": float(self.double_edit_x.value()),
                     "y": float(self.double_edit_y.value()),
-                    "z": float(self.double_edit_z.value())
+                    "z": float(self.double_edit_z.value()),
+                    "upd": self.frame_counter
                 }
                 options[1](**values)
                 self.double_edit_x.setValue(entity.x)
@@ -232,15 +233,15 @@ class MainWindow(QMainWindow):
             ], self.scene.add_point),
             "Отрезок": ([
                 ("name", "Имя отрезка", str),
-                ("point_a_name", "Точка A", str),
-                ("point_b_name", "Точка B", str)
+                ("point_a_name", "Имя точки A", str),
+                ("point_b_name", "Имя точки B", str)
             ], self.scene.add_segment),
             "Плоскость": {
                 "По трем точкам": ([
                     ("name", "Имя плоскости", str),
-                    ("point1_name", "", str),
-                    ("point2_name", "", str),
-                    ("point3_name", "", str)
+                    ("point1_name", "Имя точки 1", str),
+                    ("point2_name", "Имя точки 2", str),
+                    ("point3_name", "Имя точки 3", str)
                 ], self.scene.add_plane_by_points),
                 "По точке и отрезку": ([
                     ("name", "Имя плоскости", str),

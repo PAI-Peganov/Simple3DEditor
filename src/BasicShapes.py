@@ -8,15 +8,19 @@ class BasicShape:
         self.y = 0.0
         self.z = 0.0
         self.child_shapes = None
+        self.last_update = 0
 
     def set(self, **kwargs):
         for tag, value in kwargs.items():
+            if tag == "upd":
+                continue
             if not isinstance(value, type(self.__getattribute__(tag))):
                 print(type(value) + "некорректен")
             self.__setattr__(tag, type(self.__getattribute__(tag))(value))
-        self.update_coordinates()
+        self.last_update = kwargs["upd"]
+        self.update_coordinates(self.last_update)
 
-    def update_coordinates(self):
+    def update_coordinates(self, last: int):
         pass
 
     def get_edit_params(self):
@@ -66,7 +70,10 @@ class Segment(BasicShape):
     def draw_shape(self):
         draw_segment(self)
 
-    def update_coordinates(self):
+    def update_coordinates(self, last: int):
+        if self.last_update == last:
+            return
+        self.last_update = last
         self.point_a.x += self.x
         self.point_a.y += self.y
         self.point_a.z += self.z
@@ -86,7 +93,10 @@ class Figure2(BasicShape):
     def draw_shape(self):
         draw_figure2(self)
 
-    def update_coordinates(self):
+    def update_coordinates(self, last: int):
+        if self.last_update == last:
+            return
+        self.last_update = last
         for point in self.points:
             point.x += self.x
             point.y += self.y
@@ -177,7 +187,10 @@ class Figure3(BasicShape):
         super().__init__(name)
         self.faces = list(faces)
 
-    def update_coordinates(self):
+    def update_coordinates(self, last: int):
+        if self.last_update == last:
+            return
+        self.last_update = last
         for face in self.faces:
             face.x += self.x
             face.y += self.y
