@@ -3,3 +3,4 @@ PyQt5
 numpy
 pytest
 pytest-cov
+Pillow

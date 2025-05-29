@@ -1,8 +1,9 @@
 from src.Simple2DEditorImports import *
 
 
-def set_material(color, shininess=100.0,
-                 ambient=0.2, diffuse=0.9, specular=0.001):
+def set_material(
+    color, shininess=100.0, ambient=0.2, diffuse=0.9, specular=0.001
+):
     color = np.array(color)
     ambient_val = color * ambient
     ambient_val[3] = color[3]

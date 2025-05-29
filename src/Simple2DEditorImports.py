@@ -7,6 +7,7 @@ from collections import deque, defaultdict
 import math
 import pickle
 from pathlib import Path
+from PIL import Image
 
 ERROR_EXCEPTION = 1
 ERROR_WRONG_SETTINGS = 2

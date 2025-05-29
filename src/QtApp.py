@@ -75,6 +75,16 @@ class GLWidget(QGLWidget):
         draw_segment(self.basis_y, color=[0.0, 1.0, 0.0])
         draw_segment(self.basis_z, color=[0.0, 0.0, 1.0])
 
+    def save_to_png(self, filepath):
+        glPixelStorei(GL_PACK_ALIGNMENT, 1)
+        viewport = glGetIntegerv(GL_VIEWPORT)
+        buffer = glReadPixels(
+            0, 0, viewport[2], viewport[3], GL_RGB, GL_UNSIGNED_BYTE
+        )
+        image = Image.frombytes('RGB', (viewport[2], viewport[3]), buffer)
+        image = image.transpose(Image.FLIP_TOP_BOTTOM)
+        image.save(str(filepath), format='PNG')
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -158,19 +168,28 @@ class MainWindow(QMainWindow):
         save_button.clicked.connect(save_click)
 
         def load_click():
-            load_path = path_line.text().strip()
-            if not load_path:
-                load_path = filedialog.askopenfilename(
-                    filetypes=[("Pickle files", "*.pkl")]
-                )
+            load_path = filedialog.askopenfilename(
+                filetypes=[("Pickle files", "*.pkl")]
+            )
             if load_path:
                 if not os.path.exists(load_path):
                     QMessageBox.warning(self, "Ошибка", "Файл не найден")
                 self.scene.load_entities_from_file(Path(load_path))
                 path_line.setText(str(Path(load_path)))
-
         load_button = QPushButton(text="Load")
         load_button.clicked.connect(load_click)
+
+        def save_frame():
+            picture_path = filedialog.asksaveasfilename(
+                defaultextension=".png",
+                filetypes=[("Picture PNG", "*.png")]
+            )
+            if picture_path:
+                self.openGL_widget.save_to_png(Path(picture_path))
+        shoot_button = QPushButton(text="ScreenShoot")
+        shoot_button.clicked.connect(save_frame)
+
+        layout.addWidget(shoot_button)
         layout.addWidget(load_button)
         layout.addWidget(path_line)
         layout.addWidget(save_button)
