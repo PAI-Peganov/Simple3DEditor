@@ -26,9 +26,9 @@ def find_normal_figure2(figure, inner_point):
     q = np.mean(points, axis=0)
     matrix = np.array([el - q for el in points])
     _, _, right_matrix = np.linalg.svd(matrix)
-    if inner_point is None or (q - inner_point) * right_matrix[2] > 0:
+    if inner_point is None or np.dot(q - inner_point, right_matrix[2]) > 0:
         return right_matrix[2]
-    return -right_matrix[2]
+    return right_matrix[2] * (-1)
 
 
 def out_light(func):
@@ -100,7 +100,7 @@ def draw_plane(figure):
 
 def draw_figure3(figure):
     for face in figure.faces:
-        draw_figure2(face, figure.np_center)
+        draw_figure2(face, figure.get_center())
 
 
 def draw_light(figure):

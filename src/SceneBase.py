@@ -38,6 +38,8 @@ class Scene:
             raise TypeError("file is not .pkl")
         with open(filepath, 'rb') as f:
             self.entities = pickle.load(f)
+        for el in self.entities.values():
+            el.last_update = 0
         self.app_update()
 
     def save_entities_to_file(self, filepath: Path):

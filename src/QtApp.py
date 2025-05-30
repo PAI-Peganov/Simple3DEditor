@@ -9,7 +9,7 @@ class GLWidget(QGLWidget):
         super(GLWidget, self).__init__(parent)
         self.scene = scene
         self.camera_rotation_angle = 0
-        self.camera_lifting_angle = 0
+        self.camera_lifting_angle = math.pi / 9
         self.camera_distance = 5
         self.frame_counter = 0
         self.basis_p_0 = Point("", 0, 0, 0)
@@ -87,6 +87,9 @@ class GLWidget(QGLWidget):
         image = image.transpose(Image.FLIP_TOP_BOTTOM)
         image.save(str(filepath), format='PNG')
 
+    def get_frame_count_since_startup(self):
+        return self.frame_counter
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -142,7 +145,7 @@ class MainWindow(QMainWindow):
                     "x": float(self.double_edit_x.value()),
                     "y": float(self.double_edit_y.value()),
                     "z": float(self.double_edit_z.value()),
-                    "upd": self.frame_counter
+                    "upd": self.openGL_widget.get_frame_count_since_startup()
                 }
                 options[1](**values)
                 self.double_edit_x.setValue(entity.x)
@@ -199,11 +202,11 @@ class MainWindow(QMainWindow):
         self.widget.layout().addLayout(layout)
 
     def init_scroll(self):
-        self.scroll_rotation.setRange(0, 360)
+        self.scroll_rotation.setRange(-120, 360)
         self.scroll_rotation.setValue(0)
         self.scroll_rotation.valueChanged.connect(self.set_camera_rotation)
         self.scroll_lifting.setRange(-90, 90)
-        self.scroll_lifting.setValue(0)
+        self.scroll_lifting.setValue(-20)
         self.scroll_lifting.valueChanged.connect(self.set_camera_lifting)
         self.scroll_zooming.setRange(1, 20)
         self.scroll_zooming.setValue(self.openGL_widget.camera_distance)

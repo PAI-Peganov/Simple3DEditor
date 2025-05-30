@@ -106,6 +106,7 @@ class Figure2(BasicShape):
             point.x += self.x
             point.y += self.y
             point.z += self.z
+            point.last_update = self.last_update
         self.x = 0.0
         self.y = 0.0
         self.z = 0.0
@@ -175,6 +176,17 @@ class PlaneBy3Point(Plane):
         )
         self.update_contur()
 
+    def update_coordinates(self):
+        for point in [self.point_a, self.point_b, self.point_c]:
+            if point.last_update != self.last_update:
+                point.x += self.x
+                point.y += self.y
+                point.z += self.z
+                point.last_update = self.last_update
+        self.x = 0.0
+        self.y = 0.0
+        self.z = 0.0
+
 
 class PlaneByPointSegment(PlaneBy3Point):
     def __init__(self, name: str, point: Point, segment: Segment):
@@ -192,25 +204,40 @@ class PlaneByPlane(Plane):
         self.normal = np.array(self.base_plane.normal)
         self.update_contur()
 
+    def update_coordinates(self):
+        if self.point_a.last_update != self.last_update:
+            self.point_a.x += self.x
+            self.point_a.y += self.y
+            self.point_a.z += self.z
+            self.point_a.last_update = self.last_update
+        self.x = 0.0
+        self.y = 0.0
+        self.z = 0.0
+
 
 class Figure3(BasicShape):
     def __init__(self, name: str, faces: list[Figure2]):
         super().__init__(name)
         self.faces = list(faces)
-        self.np_center = np.array([0.0, 0.0, 0.05])
+        self.points = set()
+        self.init_points()
+
+    def init_points(self):
+        for face in self.faces:
+            for point in face.points:
+                self.points.add(point)
 
     def update_coordinates(self):
         for face in self.faces:
             if face.last_update == self.last_update:
                 continue
-            face.x += self.x
-            face.y += self.y
-            face.z += self.z
-            face.update_coordinates()
-        self.np_center += np.array([self.x, self.y, self.z])
+            face.set(x=self.x, y=self.y, z=self.z, upd=self.last_update)
         self.x = 0.0
         self.y = 0.0
         self.z = 0.0
 
     def draw_shape(self):
         draw_figure3(self)
+
+    def get_center(self):
+        return np.mean([p.np_vector for p in self.points], axis=0)

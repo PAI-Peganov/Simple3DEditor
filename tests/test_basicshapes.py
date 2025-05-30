@@ -20,6 +20,7 @@ class TestBasicShape(unittest.TestCase):
         self.assertEqual(self.shape.x, 1.5)
         self.assertEqual(self.shape.y, 2.5)
         self.assertEqual(self.shape.z, 3.5)
+        self.assertEqual(self.shape.last_update, 10)
 
     def test_get_edit_params(self):
         params, set_func = self.shape.get_edit_params()
@@ -29,7 +30,7 @@ class TestBasicShape(unittest.TestCase):
         self.assertEqual(set_func, self.shape.set)
 
     def test_add_children(self):
-        children = [BasicShape("child1"), BasicShape("child2")]
+        children = ["child1", "child2"]
         self.shape.add_children(children)
         self.assertEqual(self.shape.child_shapes, children)
 
@@ -101,6 +102,7 @@ class TestFigure2(unittest.TestCase):
             self.assertEqual(point.x, i + 1.0)
             self.assertEqual(point.y, i + 2.0)
             self.assertEqual(point.z, i + 3.0)
+            self.assertEqual(point.last_update, 1)
         self.assertEqual(self.figure.x, 0.0)
         self.assertEqual(self.figure.y, 0.0)
         self.assertEqual(self.figure.z, 0.0)
@@ -150,6 +152,18 @@ class TestPlaneBy3Point(unittest.TestCase):
         )
         np.testing.assert_array_equal(self.plane.normal, expected_normal)
 
+    def test_update_coordinates(self):
+        self.plane.set(x=1.0, y=2.0, z=3.0, upd=1)
+        for point in [
+            self.plane.point_a,
+            self.plane.point_b,
+            self.plane.point_c
+        ]:
+            self.assertEqual(point.last_update, 1)
+        self.assertEqual(self.plane.x, 0.0)
+        self.assertEqual(self.plane.y, 0.0)
+        self.assertEqual(self.plane.z, 0.0)
+
 
 class TestPlaneByPointSegment(unittest.TestCase):
     def setUp(self):
@@ -181,6 +195,13 @@ class TestPlaneByPlane(unittest.TestCase):
         self.plane.update_plane()
         np.testing.assert_array_equal(self.plane.normal, self.base_plane.normal)
 
+    def test_update_coordinates(self):
+        self.plane.set(x=1.0, y=2.0, z=3.0, upd=1)
+        self.assertEqual(self.plane.point_a.last_update, 1)
+        self.assertEqual(self.plane.x, 0.0)
+        self.assertEqual(self.plane.y, 0.0)
+        self.assertEqual(self.plane.z, 0.0)
+
 
 class TestFigure3(unittest.TestCase):
     def setUp(self):
@@ -191,16 +212,19 @@ class TestFigure3(unittest.TestCase):
     def test_initialization(self):
         self.assertEqual(self.figure.name, "test_figure")
         self.assertEqual(len(self.figure.faces), 3)
+        self.assertEqual(len(self.figure.points), 3)
 
     def test_update_coordinates(self):
         self.figure.set(x=1.0, y=2.0, z=3.0, upd=1)
         for face in self.figure.faces:
-            self.assertEqual(face.x, 0.0)
-            self.assertEqual(face.y, 0.0)
-            self.assertEqual(face.z, 0.0)
+            self.assertEqual(face.last_update, 1)
         self.assertEqual(self.figure.x, 0.0)
         self.assertEqual(self.figure.y, 0.0)
         self.assertEqual(self.figure.z, 0.0)
+
+    def test_get_center(self):
+        center = self.figure.get_center()
+        np.testing.assert_array_almost_equal(center, np.array([1.0, 1.0, 1.0]))
 
 
 if __name__ == '__main__':
