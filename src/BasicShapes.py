@@ -131,8 +131,10 @@ class Plane(BasicShape):
     def update_contur(self):
         for contur in self.contur:
             for i in range(len(contur.segments)):
-                new_z = self.count_new_z(contur.segments[i].point_a.x,
-                                         contur.segments[i].point_a.y)
+                new_z = self.count_new_z(
+                    contur.segments[i].point_a.x,
+                    contur.segments[i].point_a.y
+                )
                 contur.segments[i].point_a.z = new_z
                 contur.segments[i - 1].point_b.z = new_z
 
@@ -141,9 +143,13 @@ class Plane(BasicShape):
         self.update_contur()
 
     def count_new_z(self, x, y):
-        return ((self.point_a.x - x) * self.normal[0] +
-                (self.point_a.y - y) * self.normal[1] +
-                self.point_a.z * self.normal[2]) / self.normal[2]
+        return sum(
+            [
+                (self.point_a.x - x) * self.normal[0],
+                (self.point_a.y - y) * self.normal[1],
+                self.point_a.z * self.normal[2]
+            ]
+        ) / self.normal[2]
 
     def draw_shape(self):
         self.redraw -= 1
@@ -191,6 +197,7 @@ class Figure3(BasicShape):
     def __init__(self, name: str, faces: list[Figure2]):
         super().__init__(name)
         self.faces = list(faces)
+        self.np_center = np.array([0.0, 0.0, 0.05])
 
     def update_coordinates(self):
         for face in self.faces:
@@ -200,6 +207,7 @@ class Figure3(BasicShape):
             face.y += self.y
             face.z += self.z
             face.update_coordinates()
+        self.np_center += np.array([self.x, self.y, self.z])
         self.x = 0.0
         self.y = 0.0
         self.z = 0.0

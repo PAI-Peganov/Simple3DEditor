@@ -57,9 +57,12 @@ class AddingWidget(QDialog):
         self.adjustSize()
 
         self.layout = QVBoxLayout()
-        self.setSizePolicy(QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Policy.Preferred,
-            QtWidgets.QSizePolicy.Policy.Maximum))
+        self.setSizePolicy(
+            QtWidgets.QSizePolicy(
+                QtWidgets.QSizePolicy.Policy.Preferred,
+                QtWidgets.QSizePolicy.Policy.Maximum
+            )
+        )
         self.inputs = dict()
         self.func = func
 
@@ -75,18 +78,25 @@ class AddingWidget(QDialog):
                 new_input.setRange(-1000, 1000)
                 new_input.setValue(0)
             else:
-                new_input = ListStringsInput(param[3],
-                                             can_add_lines=param[4])
+                new_input = ListStringsInput(
+                    param[3], can_add_lines=param[4]
+                )
             self.inputs[param[0]] = new_input
             label = QLabel(text=param[1])
             self.layout.addWidget(label)
-            label.setSizePolicy(QtWidgets.QSizePolicy(
-                QtWidgets.QSizePolicy.Policy.Expanding,
-                QtWidgets.QSizePolicy.Policy.Maximum))
+            label.setSizePolicy(
+                QtWidgets.QSizePolicy(
+                    QtWidgets.QSizePolicy.Policy.Expanding,
+                    QtWidgets.QSizePolicy.Policy.Maximum
+                )
+            )
             self.layout.addWidget(new_input)
-            new_input.setSizePolicy(QtWidgets.QSizePolicy(
-                QtWidgets.QSizePolicy.Policy.Expanding,
-                QtWidgets.QSizePolicy.Policy.Maximum))
+            new_input.setSizePolicy(
+                QtWidgets.QSizePolicy(
+                    QtWidgets.QSizePolicy.Policy.Expanding,
+                    QtWidgets.QSizePolicy.Policy.Maximum
+                )
+            )
             # self.layout.addRow(param[1], new_input)
 
         self.submit_btn = QPushButton("Создать")
@@ -113,9 +123,7 @@ class AddingWidget(QDialog):
             self.func(**result)
             self.accept()
         except Exception as e:
-            QMessageBox.warning(self,
-                                "Ошибка",
-                                "{}".format(e))
+            QMessageBox.warning(self, "Ошибка", "{}".format(e))
 
 
 class AddingOptionsWidget(QDialog):
@@ -125,25 +133,34 @@ class AddingOptionsWidget(QDialog):
         self.adjustSize()
         self.is_destroyable = is_destroyable
         self.setWindowTitle(name)
-        self.setSizePolicy(QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Policy.Preferred,
-            QtWidgets.QSizePolicy.Policy.MinimumExpanding))
+        self.setSizePolicy(
+            QtWidgets.QSizePolicy(
+                QtWidgets.QSizePolicy.Policy.Preferred,
+                QtWidgets.QSizePolicy.Policy.MinimumExpanding
+            )
+        )
         self.layout = QVBoxLayout()
         for option_name, option in options.items():
             self.add_button(option_name, option)
         space_widget = QWidget()
         self.layout.addWidget(space_widget)
         self.setLayout(self.layout)
-        space_widget.setSizePolicy(QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Policy.Preferred,
-            QtWidgets.QSizePolicy.Policy.MinimumExpanding))
+        space_widget.setSizePolicy(
+            QtWidgets.QSizePolicy(
+                QtWidgets.QSizePolicy.Policy.Preferred,
+                QtWidgets.QSizePolicy.Policy.MinimumExpanding
+            )
+        )
 
     def add_button(self, name, option):
         new_button = QPushButton(text=name)
         self.layout.addWidget(new_button)
-        new_button.setSizePolicy(QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Policy.Expanding,
-            QtWidgets.QSizePolicy.Policy.Maximum))
+        new_button.setSizePolicy(
+            QtWidgets.QSizePolicy(
+                QtWidgets.QSizePolicy.Policy.Expanding,
+                QtWidgets.QSizePolicy.Policy.Maximum
+            )
+        )
 
         def click_starter():
             if isinstance(option, dict):

@@ -2,7 +2,9 @@
 ## Author
 Peganov Artyom (Пеганов Артём) artyompeganov428@gmail.com
 ## Starting App
-For start App run QtApp.py
+For start App run Simple3DEditor.py
+## Take Help
+py Simple3DEditor --help
 ## Features
 "Save" button to save scene as pkl file
 

@@ -157,9 +157,11 @@ class Scene:
         )
         plane = self.entities[plane_name]
         contur_name = f"contur_{plane_name}_{len(plane.contur)}"
-        plane.add_contur(Contur2(
-            contur_name,
-            [self.entities[segment_name] for segment_name in segments_names])
+        plane.add_contur(
+            Contur2(
+                contur_name,
+                [self.entities[segment_name] for segment_name in segments_names]
+            )
         )
         plane.contur[-1].add_children(segments_names)
         self.app_update()

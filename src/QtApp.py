@@ -48,13 +48,15 @@ class GLWidget(QGLWidget):
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
         gluPerspective(70, self.width() / self.height(), 0.1, 100.0)
-        gluLookAt(math.cos(self.camera_rotation_angle) *
-                  math.cos(self.camera_lifting_angle) * self.camera_distance,
-                  math.sin(self.camera_rotation_angle) *
-                  math.cos(self.camera_lifting_angle) * self.camera_distance,
-                  math.sin(self.camera_lifting_angle) * self.camera_distance,
-                  0, 0, 0,
-                  0, 0, 1)
+        gluLookAt(
+            math.cos(self.camera_rotation_angle) *
+            math.cos(self.camera_lifting_angle) * self.camera_distance,
+            math.sin(self.camera_rotation_angle) *
+            math.cos(self.camera_lifting_angle) * self.camera_distance,
+            math.sin(self.camera_lifting_angle) * self.camera_distance,
+            0, 0, 0,
+            0, 0, 1
+        )
         self.frame_counter += 1
 
         self.draw_basis()
@@ -245,82 +247,131 @@ class MainWindow(QMainWindow):
 
     def init_adding_params(self):
         return {
-            "Точка": ([
-                ("name", "Имя точки", str),
-                ("x", "X", float),
-                ("y", "Y", float),
-                ("z", "Z", float),
-            ], self.scene.add_point),
-            "Отрезок": ([
-                ("name", "Имя отрезка", str),
-                ("point_a_name", "Имя точки A", str),
-                ("point_b_name", "Имя точки B", str)
-            ], self.scene.add_segment),
+            "Точка": (
+                [
+                    ("name", "Имя точки", str),
+                    ("x", "X", float),
+                    ("y", "Y", float),
+                    ("z", "Z", float),
+                ],
+                self.scene.add_point
+            ),
+            "Отрезок": (
+                [
+                    ("name", "Имя отрезка", str),
+                    ("point_a_name", "Имя точки A", str),
+                    ("point_b_name", "Имя точки B", str)
+                ],
+                self.scene.add_segment
+            ),
             "Плоскость": {
-                "По трем точкам": ([
-                    ("name", "Имя плоскости", str),
-                    ("point1_name", "Имя точки 1", str),
-                    ("point2_name", "Имя точки 2", str),
-                    ("point3_name", "Имя точки 3", str)
-                ], self.scene.add_plane_by_points),
-                "По точке и отрезку": ([
-                    ("name", "Имя плоскости", str),
-                    ("point_name", "Точка", str),
-                    ("segment_name", "Отрезок", str)
-                ], self.scene.add_plane_by_point_and_segment),
-                "Параллельно плоскости": ([
-                    ("name", "Имя плоскости", str),
-                    ("point_name", "Точка в плоскости", str),
-                    ("plane_name", "Параллельна плоскость", str)
-                ], self.scene.add_plane_by_plane)
+                "По трем точкам": (
+                    [
+                        ("name", "Имя плоскости", str),
+                        ("point1_name", "Имя точки 1", str),
+                        ("point2_name", "Имя точки 2", str),
+                        ("point3_name", "Имя точки 3", str)
+                    ],
+                    self.scene.add_plane_by_points
+                ),
+                "По точке и отрезку": (
+                    [
+                        ("name", "Имя плоскости", str),
+                        ("point_name", "Точка", str),
+                        ("segment_name", "Отрезок", str)
+                    ],
+                    self.scene.add_plane_by_point_and_segment
+                ),
+                "Параллельно плоскости": (
+                    [
+                        ("name", "Имя плоскости", str),
+                        ("point_name", "Точка в плоскости", str),
+                        ("plane_name", "Параллельна плоскость", str)
+                    ],
+                    self.scene.add_plane_by_plane
+                )
             },
             "Контур 2D": {
-                "По отрезкам зацикленной ломаной": ([
-                    ("plane_name", "Плоскость", str),
-                    ("segments_names", "Отрезки (по порядку в ломаной)",
-                     list[str], 3, True)
-                ], self.scene.add_contur_to_plane),
-                "Сгенерировать N Отрезков": ([
-                    ("plane_name", "Плоскость", str),
-                    ("n", "Кол-во точек", int),
-                    ("radius", "Радиус", float)
-                ], self.scene.add_contur_n_to_plane)
+                "По отрезкам зацикленной ломаной": (
+                    [
+                        ("plane_name", "Плоскость", str),
+                        (
+                            "segments_names",
+                            "Отрезки (по порядку в ломаной)",
+                            list[str],
+                            3,
+                            True
+                        )
+                    ],
+                    self.scene.add_contur_to_plane
+                ),
+                "Сгенерировать N Отрезков": (
+                    [
+                        ("plane_name", "Плоскость", str),
+                        ("n", "Кол-во точек", int),
+                        ("radius", "Радиус", float)
+                    ],
+                    self.scene.add_contur_n_to_plane
+                )
             },
             "Фигура 2D": {
-                "По точкам": ([
-                    ("name", "Имя фигуры", str),
-                    ("points_names", "Точки (порядок по ходу окружности)",
-                     list[str], 3, True)
-                ], self.scene.add_figure2),
-                "Сгенерировать N Точек": ([
-                    ("name", "Имя фигуры", str),
-                    ("n", "Кол-во точек", int),
-                    ("radius", "Радиус", float)
-                ], self.scene.add_figure2_n)
+                "По точкам": (
+                    [
+                        ("name", "Имя фигуры", str),
+                        (
+                            "points_names",
+                            "Точки (порядок по ходу окружности)",
+                            list[str],
+                            3,
+                            True
+                        )
+                    ],
+                    self.scene.add_figure2
+                ),
+                "Сгенерировать N Точек": (
+                    [
+                        ("name", "Имя фигуры", str),
+                        ("n", "Кол-во точек", int),
+                        ("radius", "Радиус", float)
+                    ],
+                    self.scene.add_figure2_n
+                )
             },
             "Фигура 3D": {
-                "Объединить грани": ([
-                    ("name", "Имя фигуры", str),
-                    ("faces_names", "Грани", list[str], 1, True)
-                ], self.scene.add_figure3),
-                "Призма": ([
-                    ("name", "Имя фигуры", str),
-                    ("n", "Кол-во боковых граней", int),
-                    ("radius", "Радиус", float),
-                    ("height", "Высота", float)
-                ], self.scene.add_prism_n),
-                "Пирамида": ([
-                    ("name", "Имя фигуры", str),
-                    ("n", "Кол-во боковых граней", int),
-                    ("radius", "Радиус", float),
-                    ("height", "Высота", float)
-                ], self.scene.add_pyramid_n),
-                "Сфера": ([
-                    ("name", "Имя фигуры", str),
-                    ("n", "Кол-во граней по горизонтали", int),
-                    ("m", "Кол-во граней по вертикали", int),
-                    ("radius", "Радиус", float)
-                ], self.scene.add_sphere_nm)
+                "Объединить грани": (
+                    [
+                        ("name", "Имя фигуры", str),
+                        ("faces_names", "Грани", list[str], 1, True)
+                    ],
+                    self.scene.add_figure3
+                ),
+                "Призма": (
+                    [
+                        ("name", "Имя фигуры", str),
+                        ("n", "Кол-во боковых граней", int),
+                        ("radius", "Радиус", float),
+                        ("height", "Высота", float)
+                    ],
+                    self.scene.add_prism_n
+                ),
+                "Пирамида": (
+                    [
+                        ("name", "Имя фигуры", str),
+                        ("n", "Кол-во боковых граней", int),
+                        ("radius", "Радиус", float),
+                        ("height", "Высота", float)
+                    ],
+                    self.scene.add_pyramid_n
+                ),
+                "Сфера": (
+                    [
+                        ("name", "Имя фигуры", str),
+                        ("n", "Кол-во граней по горизонтали", int),
+                        ("m", "Кол-во граней по вертикали", int),
+                        ("radius", "Радиус", float)
+                    ],
+                    self.scene.add_sphere_nm
+                )
             }
         }
 

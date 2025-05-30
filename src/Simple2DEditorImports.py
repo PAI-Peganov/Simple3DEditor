@@ -64,6 +64,7 @@ try:
     from src.BasicShapes import *
     from src.SceneBase import *
     from src.AddingWindows import *
+    from src.QtApp import *
 except Exception as e:
     print('App modules not found: "{}"'.format(e), file=sys.stderr)
     sys.exit(ERROR_MODULES_MISSING)
