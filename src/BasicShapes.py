@@ -11,16 +11,21 @@ class BasicShape:
         self.last_update = 0
 
     def set(self, **kwargs):
+        if self.last_update == kwargs["upd"]:
+            return
         for tag, value in kwargs.items():
             if tag == "upd":
+                self.__setattr__(
+                    "last_update",
+                    type(self.__getattribute__("last_update"))(value)
+                )
                 continue
             if not isinstance(value, type(self.__getattribute__(tag))):
                 print(type(value) + "некорректен")
             self.__setattr__(tag, type(self.__getattribute__(tag))(value))
-        self.last_update = kwargs["upd"]
-        self.update_coordinates(self.last_update)
+        self.update_coordinates()
 
-    def update_coordinates(self, last: int):
+    def update_coordinates(self):
         pass
 
     def get_edit_params(self):
@@ -70,16 +75,17 @@ class Segment(BasicShape):
     def draw_shape(self):
         draw_segment(self)
 
-    def update_coordinates(self, last: int):
-        if self.last_update == last:
-            return
-        self.last_update = last
-        self.point_a.x += self.x
-        self.point_a.y += self.y
-        self.point_a.z += self.z
-        self.point_b.x += self.x
-        self.point_b.y += self.y
-        self.point_b.z += self.z
+    def update_coordinates(self):
+        if self.point_a.last_update != self.last_update:
+            self.point_a.last_update = self.last_update
+            self.point_a.x += self.x
+            self.point_a.y += self.y
+            self.point_a.z += self.z
+        if self.point_b.last_update != self.last_update:
+            self.point_b.last_update = self.last_update
+            self.point_b.x += self.x
+            self.point_b.y += self.y
+            self.point_b.z += self.z
         self.x = 0.0
         self.y = 0.0
         self.z = 0.0
@@ -93,11 +99,10 @@ class Figure2(BasicShape):
     def draw_shape(self):
         draw_figure2(self)
 
-    def update_coordinates(self, last: int):
-        if self.last_update == last:
-            return
-        self.last_update = last
+    def update_coordinates(self):
         for point in self.points:
+            if point.last_update == self.last_update:
+                continue
             point.x += self.x
             point.y += self.y
             point.z += self.z
@@ -158,10 +163,10 @@ class PlaneBy3Point(Plane):
         self.update_plane()
 
     def update_plane(self):
-        self.normal = np.cross(self.point_a.np_vector -
-                               self.point_b.np_vector,
-                               self.point_c.np_vector -
-                               self.point_b.np_vector)
+        self.normal = np.cross(
+            self.point_a.np_vector - self.point_b.np_vector,
+            self.point_c.np_vector - self.point_b.np_vector
+        )
         self.update_contur()
 
 
@@ -187,11 +192,10 @@ class Figure3(BasicShape):
         super().__init__(name)
         self.faces = list(faces)
 
-    def update_coordinates(self, last: int):
-        if self.last_update == last:
-            return
-        self.last_update = last
+    def update_coordinates(self):
         for face in self.faces:
+            if face.last_update == self.last_update:
+                continue
             face.x += self.x
             face.y += self.y
             face.z += self.z

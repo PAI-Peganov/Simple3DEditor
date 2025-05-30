@@ -97,8 +97,9 @@ class MainWindow(QMainWindow):
         self.OpenGLContainer.layout().addWidget(self.openGL_widget)
 
         self.adding_page.layout().addWidget(
-            AddingOptionsWidget("", self.init_adding_params(),
-                                is_destroyable=False)
+            AddingOptionsWidget(
+                "", self.init_adding_params(), is_destroyable=False
+            )
         )
         self.entity_tree.setColumnCount(2)
         self.entity_tree.setHeaderLabels(["Имя", "Тип"])

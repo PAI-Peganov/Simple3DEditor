@@ -9,9 +9,9 @@ class EntityNotFoundException(Exception):
 class EntityWrongTypeException(Exception):
     def __init__(self, name, expected_type, entity_type):
         super().__init__(
-            "{} должна быть {}, а является {}".format(name,
-                                                      expected_type,
-                                                      entity_type)
+            "{} должна быть {}, а является {}".format(
+                name, expected_type, entity_type
+            )
         )
 
 
@@ -53,9 +53,9 @@ class Scene:
             if self.entities.get(el[0]) is None:
                 raise EntityNotFoundException(el[0])
             if not isinstance(self.entities.get(el[0]), el[1]):
-                raise EntityWrongTypeException(el[0],
-                                               el[1],
-                                               type(self.entities.get(el[0])))
+                raise EntityWrongTypeException(
+                    el[0], el[1], type(self.entities.get(el[0]))
+                )
         if new_entity is not None:
             if len(new_entity) == 0:
                 raise EmptyFieldException()
@@ -75,9 +75,9 @@ class Scene:
         self.check_contains_errors(
             (point_a_name, Point), (point_b_name, Point), new_entity=name
         )
-        self.entities[name] = Segment(name,
-                                      self.entities[point_a_name],
-                                      self.entities[point_b_name])
+        self.entities[name] = Segment(
+            name, self.entities[point_a_name], self.entities[point_b_name]
+        )
         self.entities[name].add_children([point_a_name, point_b_name])
         self.app_update()
 
@@ -96,10 +96,12 @@ class Scene:
         points = [f"figure2_point_{name}_{i}" for i in range(1, n + 1)]
         arc = 2 * math.pi / n
         for i, point_name in enumerate(points):
-            self.add_point(point_name,
-                           math.sin(arc * i) * radius,
-                           math.cos(arc * i) * radius,
-                           0.0)
+            self.add_point(
+                point_name,
+                math.sin(arc * i) * radius,
+                math.cos(arc * i) * radius,
+                0.0
+            )
         self.add_figure2(name, points)
         self.app_update()
 
@@ -118,16 +120,17 @@ class Scene:
         if is_point_collinear(point1, point2, point3):
             raise ValueError()
         self.entities[name] = PlaneBy3Point(name, point1, point2, point3)
-        self.entities[name].add_children([point1_name,
-                                          point2_name,
-                                          point3_name])
+        self.entities[name].add_children(
+            [point1_name, point2_name, point3_name]
+        )
         self.app_update()
 
     def add_plane_by_point_and_segment(
         self, name: str, point_name: str, segment_name: str
     ):
         self.check_contains_errors(
-            (point_name, Point), (segment_name, Segment), new_entity=name)
+            (point_name, Point), (segment_name, Segment), new_entity=name
+        )
         point = self.entities[point_name]
         segment = self.entities[segment_name]
         if is_point_collinear(point, segment.point_a, segment.point_b):
@@ -168,10 +171,12 @@ class Scene:
         points = [f"contur_point_{plane_name}_{i}" for i in range(1, n + 1)]
         arc = 2 * math.pi / n
         for i, point_name in enumerate(points):
-            self.add_point(point_name,
-                           math.sin(arc * i) * radius,
-                           math.cos(arc * i) * radius,
-                           0.0)
+            self.add_point(
+                point_name,
+                math.sin(arc * i) * radius,
+                math.cos(arc * i) * radius,
+                0.0
+            )
         segments = []
         for i in range(1, n + 1):
             segments.append(f"segment_{plane_name}_{i}")
@@ -184,7 +189,8 @@ class Scene:
             *[(el, Figure2) for el in faces_names], new_entity=name
         )
         self.entities[name] = Figure3(
-            name, [self.entities[face_name] for face_name in faces_names])
+            name, [self.entities[face_name] for face_name in faces_names]
+        )
         self.entities[name].add_children(faces_names)
         self.app_update()
 
@@ -198,23 +204,32 @@ class Scene:
         lower_points = [f"pnt_lwr_{name}_{i}" for i in range(1, n + 1)]
         arc = 2 * math.pi / n
         for i, (name_u, name_l) in enumerate(zip(upper_points, lower_points)):
-            self.add_point(name_u,
-                           math.sin(arc * i) * radius,
-                           math.cos(arc * i) * radius,
-                           height)
-            self.add_point(name_l,
-                           math.sin(arc * i) * radius,
-                           math.cos(arc * i) * radius,
-                           0.0)
+            self.add_point(
+                name_u,
+                math.sin(arc * i) * radius,
+                math.cos(arc * i) * radius,
+                height
+            )
+            self.add_point(
+                name_l,
+                math.sin(arc * i) * radius,
+                math.cos(arc * i) * radius,
+                0.0
+            )
         faces = [f"face_upper_{name}", f"face_lower_{name}"]
         self.add_figure2(faces[0], upper_points)
         self.add_figure2(faces[1], lower_points)
         for i in range(1, n + 1):
             faces.append(f"face_middle_{name}_{i}")
-            self.add_figure2(faces[-1], [upper_points[i - 1],
-                                         upper_points[i % n],
-                                         lower_points[i % n],
-                                         lower_points[i - 1]])
+            self.add_figure2(
+                faces[-1],
+                [
+                    upper_points[i - 1],
+                    upper_points[i % n],
+                    lower_points[i % n],
+                    lower_points[i - 1]
+                ]
+            )
         self.add_figure3(name, faces)
         self.app_update()
 
@@ -229,17 +244,24 @@ class Scene:
         arc = 2 * math.pi / n
         self.add_point(upper_point, 0.0, 0.0, height)
         for i, name_l in enumerate(lower_points):
-            self.add_point(name_l,
-                           math.sin(arc * i) * radius,
-                           math.cos(arc * i) * radius,
-                           0.0)
+            self.add_point(
+                name_l,
+                math.sin(arc * i) * radius,
+                math.cos(arc * i) * radius,
+                0.0
+            )
         faces = [f"face_lower_{name}"]
         self.add_figure2(faces[0], lower_points)
         for i in range(1, n + 1):
             faces.append(f"face_middle_{name}_{i}")
-            self.add_figure2(faces[-1], [upper_point,
-                                         lower_points[i % n],
-                                         lower_points[i - 1]])
+            self.add_figure2(
+                faces[-1],
+                [
+                    upper_point,
+                    lower_points[i % n],
+                    lower_points[i - 1]
+                ]
+            )
         self.add_figure3(name, faces)
         self.app_update()
 
@@ -304,13 +326,21 @@ def is_point_collinear(*args):
     if len(args) < 3:
         return True
     zero_point = args[0]
-    direction_vector = np.array([args[1].x - zero_point.x,
-                                 args[1].y - zero_point.y,
-                                 args[1].z - zero_point.z])
+    direction_vector = np.array(
+        [
+            args[1].x - zero_point.x,
+            args[1].y - zero_point.y,
+            args[1].z - zero_point.z
+        ]
+    )
     for arg in args[2:]:
-        checked_vector = np.array([arg.x - zero_point.x,
-                                   arg.y - zero_point.y,
-                                   arg.z - zero_point.z])
+        checked_vector = np.array(
+            [
+                arg.x - zero_point.x,
+                arg.y - zero_point.y,
+                arg.z - zero_point.z
+            ]
+        )
         if np.linalg.norm(np.cross(direction_vector, checked_vector)) < 1e-7:
             return True
     return False
