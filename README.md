@@ -37,4 +37,4 @@ And other
 
 To add contur you need plane to add it to this plane to border it
 
-Of course you can rotate and zoom scene
+Of course you can rotate and zoom scene by scroll bars
