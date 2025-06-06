@@ -41,9 +41,7 @@ def main():
     args = sys.argv[1:]
 
     if "--help" in args:
-        with open("README.md", "r", encoding="utf-8") as f:
-            for line in f.readlines():
-                print(line)
+        print(__doc__)
         return
 
     subprocess.run(["python", "src/QtApp.py"])

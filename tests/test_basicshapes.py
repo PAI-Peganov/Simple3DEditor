@@ -171,7 +171,9 @@ class TestPlaneByPointSegment(unittest.TestCase):
         self.segment = Segment(
             "seg", Point("p1", 1, 1, 1), Point("p2", 2, 2, 2)
         )
-        self.plane = PlaneByPointSegment("test_plane", self.point, self.segment)
+        self.plane = PlaneByPointSegment(
+            "test_plane", self.point, self.segment
+        )
 
     def test_initialization(self):
         self.assertEqual(self.plane.name, "test_plane")
@@ -193,7 +195,9 @@ class TestPlaneByPlane(unittest.TestCase):
 
     def test_update_plane(self):
         self.plane.update_plane()
-        np.testing.assert_array_equal(self.plane.normal, self.base_plane.normal)
+        np.testing.assert_array_equal(
+            self.plane.normal, self.base_plane.normal
+        )
 
     def test_update_coordinates(self):
         self.plane.set(x=1.0, y=2.0, z=3.0, upd=1)
@@ -224,7 +228,9 @@ class TestFigure3(unittest.TestCase):
 
     def test_get_center(self):
         center = self.figure.get_center()
-        np.testing.assert_array_almost_equal(center, np.array([1.0, 1.0, 1.0]))
+        np.testing.assert_array_almost_equal(
+            center, np.array([1.0, 1.0, 1.0])
+        )
 
 
 if __name__ == '__main__':
